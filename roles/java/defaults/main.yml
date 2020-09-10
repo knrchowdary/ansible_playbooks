@@ -1,0 +1,12 @@
+---
+# defaults file for java
+oracle_java_set_as_default: yes
+oracle_java_version_string: 1.7.0_80
+oracle_java_rpm_version_string: 7u80
+
+oracle_java_dir_source: /opt/java
+oracle_java_rpm_filename: jdk.rpm
+oracle_java_rpm_url: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/jdk-{{oracle_java_rpm_version_string}}-linux-x64.rpm"
+oracle_java_rpm_url_username: ""
+oracle_java_rpm_url_password: ""
+oracle_java_home: '/usr/java/default'

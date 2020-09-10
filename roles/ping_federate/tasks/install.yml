@@ -1,0 +1,32 @@
+---
+
+- name: download ping federate
+  get_url: 
+    dest: "{{ ping_federate_dir }}/pingfederate.zip"
+    url: "{{ ping_federate_url }}"
+    url_username: "{{ ping_federate_url_username }}"
+    url_password: "{{ ping_federate_url_password }}"
+  register: ping_federation_task_download
+  until: ping_federation_task_download is succeeded
+  become: yes
+  when: ping_federation_version_installed is not defined or oracle_java_version_installed != oracle_java_version_string
+
+
+- name: extract the zip
+  unarchive:
+    src: "{{ ping_federate_dir }}/pingfederate.zip"
+    dest: "{{ ping_federate_dir }}"
+    remote_src: yes
+  register: ping_federate_temp_extract
+
+- name: get name of downloaded folder
+  shell: ls -al {{ ping_federate_dir }}/pingfederate-*
+  register: ping_federate_temp_file_name
+
+- name: move extracted folders
+  shell: "mv {{ ping_federate_dir }}/pingfederate-*/pingfederate/* {{ ping_federate_dir }}"
+  when: ping_federate_temp_extract.changed
+  # register:
+
+
+# - name: remove old extarcted file/folder

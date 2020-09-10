@@ -1,0 +1,10 @@
+--- 
+- name: Sonarqube installation
+  hosts: "{{ host_name | default('tag_Name_*_sonar*') }}"
+  roles:
+    - { role: base }
+    - { role: java }
+    - { role: sonarqube }
+  become: yes
+  become_method: sudo
+  remote_user: ansible

@@ -1,0 +1,32 @@
+---
+
+## httpd
+apache_certificates:
+  certificate_file:
+    src: "files/{{env}}/httpd/ssl.crt/apache-selfsigned.crt"
+    dest: "{{apache_server_root}}/ssl.crt/{{server_domain_name}}.crt"
+  certificate_key_file:
+    src: "files/{{env}}/httpd/ssl.crt/apache-selfsigned.key"
+    dest: "{{apache_server_root}}/ssl.key/apihotels.com.key"
+
+apache_ssl_override:
+  virtual_hosts:
+    "_default_:443":
+      SSLCertificateFile: "{{ apache_certificates['certificate_file']['dest'] }}"
+      SSLCertificateKeyFile: "{{ apache_certificates['certificate_key_file']['dest'] }}"
+      
+apache_timeout: 3600
+
+apache_proxy_override:
+  proxypass:
+    "/ACESSUPPLIER": "http://{{ server_to_proxy[group_names[0]] }}/ACESSUPPLIER"
+    "/assets": "http://{{ server_to_proxy[group_names[0]] }}/assets"
+    "/ACESAUTH": "http://{{server_to_proxy[group_names[0]]}}/ACESAUTH/"
+    "/ACES": "http://{{server_to_proxy[group_names[0]]}}/ACES"
+    "/ACESCLIENT": "http://{{server_to_proxy[group_names[0]]}}/ACESCLIENT"
+  proxypass_reverse:
+    "/ACESSUPPLIER": "http://{{server_to_proxy[group_names[0]]}}/ACESSUPPLIER"
+    "/assets": "http://{{server_to_proxy[group_names[0]]}}/assets"
+    "/ACESAUTH": "http://{{server_to_proxy[group_names[0]]}}/ACESAUTH/"
+    "/ACES": "http://{{server_to_proxy[group_names[0]]}}/ACES"
+    "/ACESCLIENT": "http://{{server_to_proxy[group_names[0]]}}/ACESCLIENT"

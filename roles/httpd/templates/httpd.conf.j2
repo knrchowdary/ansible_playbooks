@@ -1,0 +1,131 @@
+#jinja2: trim_blocks:False
+
+ServerRoot "{{ apache_server_root }}"
+{% if apache_server_name %}
+ServerName "{{ apache_server_name }}"
+{% endif %}
+
+Listen {{ apache_listen_port }}
+
+Include conf.modules.d/*.conf
+
+User {{ apache_user }}
+Group {{ apache_group }}
+
+ServerAdmin {{ apache_serveradmin }}
+
+DocumentRoot "{{ apache_documentroot }}"
+
+{% if apache_server_token is defined %}
+ServerTokens {{ apache_server_token }}
+{% endif %}
+
+{% if apache_timeout is defined %}
+Timeout {{ apache_timeout }}
+{% endif %}
+
+{% if apache_keep_alive is defined %}
+KeepAlive {{ apache_keep_alive }}
+{% endif %}
+
+{% if apache_max_keep_alive is defined %}
+MaxKeepAliveRequests {{ apache_max_keep_alive }}
+{% endif %}
+
+{% if apache_keep_alive_timeout is defined %}
+KeepAliveTimeout {{ apache_keep_alive_timeout }}
+{% endif %}
+
+{% for key, value in apache_directory.iteritems() %}
+<Directory "{{ key }}">
+{% for k, v in value.iteritems() %}
+    {{ k }} {{ v }}
+{% endfor %}
+</Directory>
+{% endfor %}
+
+
+{% for key, value in apache_ifmodule.iteritems() %}
+<IfModule {{ key }}>
+    {% for k, v in value.iteritems() %}
+    {{ k }} {{ v }}
+    {% endfor %}
+
+</IfModule>
+
+{% endfor %}
+
+<Files ".ht*">
+    Require all denied
+</Files>
+
+<Files ~ "^\.ht">
+    Order allow,deny
+    Deny from all
+</Files>
+
+ErrorLog "{{ apache_error_log }}"
+
+LogLevel {{ apache_log_level }}
+
+{% if apache_log_config is defined %}
+<IfModule log_config_module>
+    {{ apache_log_config }}
+</IfModule>
+{% endif %}
+
+{% for key, value in apache_alias.iteritems() %}
+Alias {{ key }} {{ value }}
+{% endfor %}
+
+{% for key, value in apache_extra_config_single_value.iteritems() %}
+{{ key }} {{ value }}
+{% endfor %}
+
+{% for key, value in apache_extra_config_multiple_value.iteritems() %}
+{% for v in value %}
+{{key}} {{ v }}
+{% endfor %}
+{% endfor %}
+
+<IfModule alias_module>
+
+    ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+
+</IfModule>
+
+<Directory "/var/www/cgi-bin">
+    AllowOverride None
+    Options None
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<IfModule mime_module>
+
+    TypesConfig /etc/mime.types
+    AddType application/x-compress .Z
+    AddType application/x-gzip .gz .tgz
+
+    AddType text/html .shtml
+    AddOutputFilter INCLUDES .shtml
+
+</IfModule>
+
+AddDefaultCharset UTF-8
+
+<IfModule mime_magic_module>
+    MIMEMagicFile conf/magic
+</IfModule>
+
+{% for key, value in apache_location.iteritems() %}
+<Location "{{ key }}">
+{% for k, v in value.iteritems() %}
+    {{ k }} {{ v }}
+{% endfor %}
+</Location>
+{% endfor %}
+
+EnableSendfile on
+
+IncludeOptional conf.d/*.conf

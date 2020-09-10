@@ -1,0 +1,47 @@
+---
+
+## Genric variable
+env: vagrant
+firewallD: 
+  enable: false
+server_domain_name: vagrant.com
+ad_domain_name: "{{ server_domain_name }}"
+
+## base
+base_default_ethernet: eth1
+
+## dns
+dns_search: "{{ server_domain_name }}"
+dns_nameserver:
+  - 192.168.94.10
+
+## Linux active directory
+linux_active_directory_domain: "{{ dns_search }}"
+linux_active_directory_bind_dn: administrator
+linux_active_directory_bind_pw: Welcome@123
+linux_active_directory_computer: "OU={{ env }},DC=vagrant,DC=com"
+linux_active_directory_group:
+  - "{{ env }}"
+linux_active_directory_sudo_group:
+  - "sudo-{{ env }}"
+
+## httpd
+apache_certificates: {}
+
+weblogic_cluster_server1:
+  acesproxy: 10.16.60.202:6002
+  jrs: 10.16.60.191:8001
+weblogic_cluster_server2:
+  acesproxy: 10.16.60.204:6004
+  jrs: 10.16.60.192:8002
+server_to_proxy: 
+  provider: 10.16.60.146
+  client: XXX
+  latamair: PROD-ACESWEB:8180
+  hotelexpress: 10.16.62.157
+  sso: PROD-ACESSSO:9030
+  jrs: XXX
+  test: XXX
+server2_to_proxy:
+  latamair: 10.16.60.181:8080
+  sso: 10.16.60.171:7002

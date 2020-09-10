@@ -1,0 +1,39 @@
+---
+# defaults file for linux_active_directory
+
+linux_active_directory_packages_for_version_7:
+  - sssd
+  - realmd
+  - oddjob
+  - oddjob-mkhomedir
+  - adcli
+  - samba-common
+  - samba-common-tools
+  - krb5-workstation
+  - openldap-clients
+  - policycoreutils-python
+  - python-pip
+  
+linux_active_directory_packages_for_version_6:
+  - adcli
+  - sssd 
+  - authconfig 
+  - pam_krb5 
+  - samba-common 
+
+
+linux_active_directory_domain: vagrant.com
+linux_active_directory_realm: "{{ linux_active_directory_domain | upper }}"
+linux_active_directory_bind_dn: administrator
+linux_active_directory_bind_pw: Welcome@123
+linux_active_directory_computer: "OU={{ env }},DC=vagrant,DC=com"
+linux_active_directory_group:
+  - "{{ env }}"
+linux_active_directory_sudo_group:
+  - sudo
+
+linux_active_directory_ssh_allow_password_auth: true
+linux_active_directory_restart_on_domain_join: true
+
+linux_active_directory_sudoers_group: Linux-NonProd-Standard
+linux_active_directory_sudoers_user: aces2dev

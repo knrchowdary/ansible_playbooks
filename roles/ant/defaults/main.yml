@@ -1,0 +1,10 @@
+---
+# Define the version of Apache Ant to download
+# Will obtain from this URL:
+aces_aces2dev_user: aces2dev
+ant_version: 1.7.0
+ant_binarie_home: "/opt/aces2/software/apache-ant-{{ ant_version }}"
+ant_home: /opt/aces2/software/ant
+ant_zip_url: "https://archive.apache.org/dist/ant/binaries/apache-ant-{{ ant_version }}-bin.zip"
+ant_software_path: /opt/aces2/software
+ant_env: /etc/profile.d/ant.env.sh

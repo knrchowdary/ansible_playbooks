@@ -1,0 +1,16 @@
+# NOT CURRENTLY USED -- UNDER TEST
+
+- name: Import configuration archive
+  get_url: 
+    dest: "{{ jenkins_import_dest }}"
+    url: "{{ jenkins_config_url }}"
+    url_username: "{{ jenkins_url_username }}"
+    url_password: "{{ jenkins_url_password }}"
+    mode: '0644'
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}" 
+  register: jenkins_config_download
+  until: jenkins_config_download is succeeded
+  become: yes
+   
+  

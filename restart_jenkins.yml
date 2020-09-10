@@ -1,0 +1,10 @@
+---
+# This playbook restarts Jenkins and Firewalld
+
+
+- hosts: "{{ host_name | default('tag_Name_*_jenkins*') }}"
+  roles:
+     - { role: restart_jenkins }
+  become: yes
+  become_method: sudo
+  remote_user: ansible

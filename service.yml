@@ -1,0 +1,6 @@
+- hosts: "{{server_groups}}"
+  roles:
+     - { role: service }
+  become: yes
+  become_method: sudo
+  remote_user: ansible

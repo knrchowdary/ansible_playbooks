@@ -1,0 +1,61 @@
+---
+
+- set_fact: 
+    apache_proxy: "{{ apache_proxy | combine(apache_proxy_override) }}"
+  when: apache_proxy_override is defined
+
+- set_fact: 
+    apache_ifmodule: "{{ apache_ifmodule | combine(apache_ifmodule_override) }}"
+  when: apache_ifmodule_override is defined
+
+- set_fact: 
+    apache_location: "{{ apache_location | combine(apache_location_override) }}"
+  when: apache_location_override is defined
+
+- set_fact: 
+    apache_extra_modules: "{{ apache_extra_modules | combine(apache_extra_modules_override) }}"
+  when: apache_extra_modules_override is defined
+
+- set_fact: 
+    apache_directory: "{{ apache_directory | combine(apache_directory_override) }}"
+  when: apache_directory_override is defined
+
+- set_fact: 
+    apache_extra_config_single_value: "{{ apache_extra_config_single_value | combine(apache_extra_config_single_value_override) }}"
+  when: apache_extra_config_single_value_override is defined
+
+- set_fact: 
+    apache_extra_config_multiple_value: "{{ apache_extra_config_multiple_value | combine(apache_extra_config_multiple_value_override) }}"
+  when: apache_extra_config_multiple_value_override is defined
+
+- debug:
+    var: apache_ssl
+
+- set_fact: 
+    apache_ssl: "{{ apache_ssl | combine(apache_ssl_override, recursive=True) }}"
+  when: apache_ssl_override is defined
+
+- debug:
+    var: apache_ssl
+
+- name: create folders 
+  file: 
+    path: "{{ item }}"
+    state: directory
+    recurse: true
+  with_items: "{{ apache_folder_to_create }}"
+
+- name: copy ssl certificate
+  copy:
+    src: "{{ item.value.src }}"
+    dest: "{{ item.value.dest }}"
+  with_dict: "{{ apache_certificates }}"
+  when: item.value.src is defined
+
+- name: copy ssl certificate/key
+  copy: 
+    content: "{{ item.value.content }}"
+    dest: "{{ item.value.dest }}"
+  no_log: true
+  with_dict: "{{ apache_certificates }}"
+  when: item.value.content is defined

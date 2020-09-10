@@ -1,0 +1,48 @@
+---
+
+## httpd
+apache_ssl: {}
+apache_timeout: 2400
+
+apache_directory_override: 
+  "/": 
+    Require: all denied
+    Options: FollowSymLinks
+  "/var/www":
+    AllowOverride: None
+    Require: all granted
+  "/var/www/html":
+    Options: Indexes FollowSymLinks
+    AllowOverride: None
+    Order: allow,deny
+    Allow: from all
+
+apache_proxy_override:
+  proxypass:
+    "/ACESSUPPLIER": http://{{server_to_proxy[group_names[0]]}}/ACESSUPPLIER
+    "/assets": http://{{server_to_proxy[group_names[0]]}}/assets
+    "/ACESAUTH": http://{{server_to_proxy[group_names[0]]}}/ACESAUTH/
+    "/ACES": http://{{server_to_proxy[group_names[0]]}}/ACES
+    "/ACESCLIENT": http://{{server_to_proxy[group_names[0]]}}/ACESCLIENT
+  proxypass_reverse: 
+    "/ACESSUPPLIER": http://{{server_to_proxy[group_names[0]]}}/ACESSUPPLIER
+    "/assets": http://{{server_to_proxy[group_names[0]]}}/assets
+    "/ACESAUTH": http://{{server_to_proxy[group_names[0]]}}/ACESAUTH/
+    "/ACES": http://{{server_to_proxy[group_names[0]]}}/ACES
+    "/ACESCLIENT": http://{{server_to_proxy[group_names[0]]}}/ACESCLIENT
+    
+apache_ifmodule_override:
+  "mod_weblogic.c":
+    WebLogicCluster: "{{weblogic_cluster_server2[group_names[0]]}},{{weblogic_cluster_server2[group_names[0]]}}"
+    MatchExpression: /*
+    SecureProxy: "OFF"
+    KeepAliveEnabled: "On"
+    KeepAliveSecs: 7200
+    Idempotent: "OFF"
+    WLIOTimeoutSecs: 7200
+
+apache_location_override:
+  "/weblogic":
+    WebLogicCluster: "{{weblogic_cluster_server2[group_names[0]]}},{{weblogic_cluster_server2[group_names[0]]}}"
+    PathTrim: /weblogic
+

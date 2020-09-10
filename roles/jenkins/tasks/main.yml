@@ -1,0 +1,11 @@
+---
+# tasks file for jenkins
+- include: pre_tasks.yml
+
+- include: install.yml
+  when: jenkins_is_installed is not defined
+
+- include: configure.yml
+
+- include: post_tasks.yml
+

@@ -1,0 +1,13 @@
+[Unit]
+Description={{ systemd_desc }}
+{% for item in systemd_after %}
+After={{ item }} 
+{% endfor %}
+
+[Service]
+Type={{ systemd_service_type }}
+PIDFile={{ systemd_service_pid }}
+ExecStart={{ systemd_service_exec }}
+
+[Install]
+WantedBy={{ systemd_install_wantedby }}

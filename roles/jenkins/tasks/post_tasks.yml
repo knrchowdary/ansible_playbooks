@@ -1,0 +1,29 @@
+---
+
+- name: start firewalld
+  service:
+    name: firewalld
+    enabled: yes
+    state: started
+
+- name: open port 8080 for Jenkins
+  firewalld:
+    zone: public
+    port: 8080/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: firewallD.enable
+  notify: 
+    - restart firewalld
+
+# CRA Removed -- should use public zone
+# - name: set firewalld zone to internal
+#   shell: firewall-cmd --set-default-zone=internal
+
+# - name: add http service
+#   shell: firewall-cmd --zone=internal --add-service=http
+
+
+
+

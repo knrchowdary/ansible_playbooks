@@ -1,0 +1,31 @@
+---
+- name: Download MySQL jConnector
+  get_url:
+    url: "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-{{ jira_java_mysql_connector_version }}.tar.gz"
+    dest: "{{ jira_home }}"
+    owner: "{{ jira_user }}"
+    group: "{{ jira_user_group }}"
+
+- name: Unarchive MySQL jConnector
+  unarchive:
+    src: "{{ jira_home }}/mysql-connector-java-{{ jira_java_mysql_connector_version }}.tar.gz"
+    dest: "{{ jira_home }}"
+    remote_src: yes
+    owner: "{{ jira_user }}"
+    group: "{{ jira_user_group }}"
+    mode: 0755          
+
+- name: Copy mysql-connector-java
+  command: cp mysql-connector-java-{{ jira_java_mysql_connector_version }}.jar {{ jira_install_base_dir }}/jira/lib
+  args:
+    chdir: "{{ jira_home }}/mysql-connector-java-{{ jira_java_mysql_connector_version }}"
+
+- name: Setup database connection
+  template: 
+    src: dbconfig.xml.j2 
+    dest: "{{ jira_home }}/dbconfig.xml"
+    owner: "{{ jira_user }}"
+    group: "{{ jira_user_group }}"
+    mode: 0660
+  notify:
+   - jira restart         

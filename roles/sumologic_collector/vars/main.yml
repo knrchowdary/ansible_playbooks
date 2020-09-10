@@ -1,0 +1,56 @@
+---
+server_timezone:
+  prod:
+    PROD-ACESIIWEBLOGICWEB: "UTC"
+    PROD-ACESACTIVEMQ: "UTC"
+    PROD-ACESLATAM: "America/New_York"
+    PROD-ACESSERICES: "UTC"
+    PROD-ACESSUPPLIER: "UTC"
+    PROD-ACESTCSFPCLIENT: "UTC"
+    PROD-ACESWEB: "America/New_York"
+    PROD-ACESWEBLOGICMQ: "UTC"
+    PROD-ACESIIWLII: "UTC"
+    PROD-ACESTCSFTPCLIENT: "America/New_York"
+
+sumo_username:
+  aces2:
+    qa: aces2dev
+    prod: aces2
+  aces3:
+    qa: aces3
+    prod: aces3
+  dpax:
+    qa: root
+    prod: root
+  logicaldoc:
+    qa: logicaldoc
+    prod: logicaldoc
+  proxy:
+    qa: root
+    prod: root
+  sso:
+    uat: pingfederate
+    prod: pingfederate
+  sftp:
+    qa: root
+    prod: root
+  azulcmextractor:
+    prod: aces2dev
+  oracle:
+    dev: oracle
+    qa: oracle
+    uat: oracle
+    prod: oracle
+osBitType: 64
+sumo_base_dir: /opt/SumoCollector
+sumo_config_dir: "{{sumo_base_dir}}/config"
+sumo_log_dir: "{{sumo_base_dir}}/logs"
+sumo_installation_dir: /root/SumoCollector
+sumo_installation_url: "https://collectors.us2.sumologic.com/rest/download/linux/{{osBitType}}"
+sumo_installation_file: SumoCollector.sh
+systemd_installation_dir: /etc/systemd/system
+reinstall: false
+needCollectorInstalled: true
+sumologic_fpsize: 6144
+collector_service: collector
+collector_restart_state: restarted

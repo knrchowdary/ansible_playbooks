@@ -1,0 +1,8 @@
+--- 
+- name: ActiveMQ Installation
+  hosts: activemq
+  roles:
+    - java
+    - activemq
+  become: yes
+  become_user: root

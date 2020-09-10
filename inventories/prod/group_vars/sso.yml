@@ -1,0 +1,22 @@
+---
+
+apache_proxy_override:
+  proxypass_reverse:
+    "/sso": https://{{server_to_proxy['sso']}}
+    "\"^/idp/(.*)$\"": "\"https://{{server_to_proxy['sso']}}/idp/$1\""
+    "\"^/sp/(.*)$\"": "\"https://{{server_to_proxy['sso']}}/sp/$1\""
+    "/sso2": https://{{server_to_proxy['sso']}}
+    "/SUPPLIER":  "\"http://{{server2_to_proxy['sso']}}/SUPPLIER\""
+    "\"/SUPPLIER/(.*)\"":  "\"http://{{server2_to_proxy['sso']}}/SUPPLIER/$1\""
+
+  proxypassmatch:
+    "\"^/sso$\"": "\"https://{{server_to_proxy['sso']}}\""
+    "\"^/sso/(.*)$\"": "\"https://{{server_to_proxy['sso']}}/$1\""
+    "\"^/idp/(.*)$\"": "\"https://{{server_to_proxy['sso']}}/idp/$1\""
+    "\"^/sp/(.*)$\"": "\"https://{{server_to_proxy['sso']}}/sp/$1\""
+    "\"^/sso2$\"": "\"https://{{server_to_proxy['sso']}}\""
+    "\"^/sso2/(.*)$\"": "\"https://{{server_to_proxy['sso']}}/$1\""
+    "\"/SUPPLIER/(.*)\"":  "\"http://{{server2_to_proxy['sso']}}/SUPPLIER/$1\""
+    "\"/SUPPLIER\"":  "\"http://{{server2_to_proxy['sso']}}/SUPPLIER\""
+
+apache_proxy_noindex_url: https://{{external_dns_name[group_names[0]]}}.{{server_domain_name}}/sso

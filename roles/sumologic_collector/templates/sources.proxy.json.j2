@@ -1,0 +1,71 @@
+{
+  "api.version":"v1",
+  "sources":[{
+       "sourceType" : "SystemStats",
+       "name" : "Host_Metrics",
+       "interval" : 60000,
+       "metrics" : ["CPU_User", "CPU_Sys", "CPU_Idle", "CPU_IOWait", "CPU_LoadAvg_5min", "Disk_UsedPercent", "Mem_Used","Mem_Free"]
+     },
+     {
+    "name":"Aces Supplier Apache Proxy - Access",
+    "description":"Aces Supplier Apache Proxy - Access",
+    "category":"{{env | upper}}/{{server_type | upper}}/HTTPD/Access",
+    "automaticDateParsing":true,
+    "multilineProcessingEnabled":true,
+    "useAutolineMatching":true,
+    "forceTimeZone":false,
+    "timeZone": "America/New_York",
+    "filters":[],
+    "cutoffTimestamp":1550638800000,
+    "encoding":"UTF-8",
+    "pathExpression":"/etc/httpd/logs/access_log",
+    "blacklist":[],
+    "sourceType":"LocalFile"
+  },{
+    "name":"Aces Supplier Apache Proxy - Error",
+    "description":"Aces Supplier Apache Proxy - Error",
+    "category":"{{env | upper}}/{{server_type | upper}}/HTTPD/Error",
+    "automaticDateParsing":true,
+    "multilineProcessingEnabled":true,
+    "useAutolineMatching":true,
+    "forceTimeZone":false,
+    "timeZone": "America/New_York",
+    "filters":[],
+    "cutoffTimestamp":1550785125000,
+    "encoding":"UTF-8",
+    "pathExpression":"/etc/httpd/logs/error_log",
+    "blacklist":[],
+    "sourceType":"LocalFile"
+  },{
+    "name":"Aces Supplier Apache Proxy - SSL Access",
+    "description":"Aces Supplier Apache Proxy - SSL Access",
+    "category":"{{env | upper}}/{{server_type | upper}}/HTTPD/Access/SSL",
+    "automaticDateParsing":true,
+    "multilineProcessingEnabled":true,
+    "useAutolineMatching":true,
+    "forceTimeZone":false,
+    "timeZone": "America/New_York",
+    "filters":[],
+    "cutoffTimestamp":1550638800000,
+    "encoding":"UTF-8",
+    "pathExpression":"/etc/httpd/logs/ssl_access_log",
+    "blacklist":[],
+    "sourceType":"LocalFile"
+  },{
+    "name":"Aces Supplier Apache Proxy - SSL Error",
+    "description":"Aces Supplier Apache Proxy - SSL Error",
+    "category":"{{env | upper}}/{{server_type | upper}}/HTTPD/Error/SSL",
+    "automaticDateParsing":true,
+    "multilineProcessingEnabled":true,
+    "useAutolineMatching":true,
+    "forceTimeZone":false,
+    "timeZone": "America/New_York",
+    "filters":[],
+    "cutoffTimestamp":1550785125000,
+    "encoding":"UTF-8",
+    "pathExpression":"/etc/httpd/logs/ssl_error_log",
+    "blacklist":[],
+    "sourceType":"LocalFile"
+  }
+  ]
+}

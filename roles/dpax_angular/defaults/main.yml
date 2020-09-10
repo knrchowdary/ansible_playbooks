@@ -1,0 +1,17 @@
+---
+dpax_angular_mvn_repo: "{{ nexus_url }}/maven-releases"
+dpax_angular_nexus_username: ""
+dpax_angular_nexus_password: ""
+dpax_angular_artifact_name: api-hotels-web.tar.gz
+dpax_angular_folder_name: api-hotels-web
+dpax_angular_group_id: com.apihotels
+dpax_angular_artifact_id: api-hotels-web
+dpax_angular_package_type: tar.gz
+dpax_angular_apache_home: "/var/www/html"
+dpax_angular_apache_deploy: "/var/www/html"
+dpax_angular_opt_dir: /opt
+dpax_angular_region: "us-east-1"
+dpax_angular_version: ""
+dpax_angular_user: "ec2-user"
+dpax_angular_group: "ec2-user"
+service_name: httpd

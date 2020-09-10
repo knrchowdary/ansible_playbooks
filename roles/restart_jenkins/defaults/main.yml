@@ -1,0 +1,16 @@
+---
+# defaults file for jenkins
+
+#enable firewallD
+firewallD: 
+  enable: True
+
+jenkins_repo_dir: "/etc/yum.repos.d"
+jenkins_deploy_dir: "{{ jenkins_repo_dir }}/server/default/deploy"
+
+jenkins_required_java_version: 1.8
+jenkins_user: jenkins_usr
+jenkins_group: jenkins_grp
+jenkins_java_home: /usr/java/default
+
+

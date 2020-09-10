@@ -1,0 +1,7 @@
+
+Todo:
+  apache role:
+    ☐ Add certificates to ansible vault string
+  base role: 
+    ☐ firewallD
+    ☐ running SSH on non standard port

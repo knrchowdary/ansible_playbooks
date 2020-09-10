@@ -1,0 +1,127 @@
+---
+- name: Create a user group - weblogic
+  group:
+    name: "{{ weblogic_group }}"
+  
+- name: Create a user and map to weblogic group
+  user:
+    name: "{{ weblogic_user }}"
+    group: "{{ weblogic_group }}"
+
+- name: Create a weblogic working directory
+  file:
+    dest: "{{ weblogic_dir }}"
+    state: directory
+    recurse: true
+    owner: "{{ weblogic_user }}"
+    group: "{{ weblogic_group }}"
+
+- name: Get Weblogic File from nexus
+  get_url:
+    url: "{{ weblogic_download_url }}"
+    dest: "{{ weblogic_dir }}/{{ weblogic_download_filename }}"
+    mode: '0755'
+    url_username: "{{ weblogic_download_username }}"
+    url_password: "{{ weblogic_download_password }}"
+
+- name: Unarchive weblogic12c file
+  unarchive:
+    src: "{{ weblogic_dir }}/{{ weblogic_download_filename }}"
+    dest: "{{ weblogic_dir }}"
+    remote_src: yes
+    creates: "{{ weblogic_mw_home }}"
+
+- name: Download domain Template
+  get_url:
+    url: "{{ weblogic_domain_download_url }}"
+    dest: "{{ weblogic_dir }}/{{ weblogic_domain_name }}.jar"
+    mode: '0777'
+    url_username: "{{ weblogic_domain_download_username }}"
+    url_password: "{{ weblogic_domain_download_password }}"
+
+- name: Copy WLST config file to wlst directory
+  template:
+    src: wlst.config.py.j2
+    dest: "{{ weblogic_dir }}/wlst.config.py"
+    mode: '0777'
+    owner: "{{ weblogic_user }}"
+    group: "{{ weblogic_group }}"
+
+- name: Copy create domain script
+  template:
+    src: createdomain.sh.j2
+    dest: "{{ weblogic_dir }}/createdomain.sh"
+    mode: '0777'
+    owner: "{{ weblogic_user }}"
+    group: "{{ weblogic_group }}"
+
+- name: configure weblogic for first time
+  shell: |
+    bash configure.sh -silent
+    touch {{ weblogic_mw_home }}/.configure.sh.run
+  environment:
+    MW_HOME: "{{ weblogic_mw_home }}"
+    WL_HOME: "{{ weblogic_wl_home }}"
+    JAVA_HOME: "{{ weblogic_java_home }}"
+    CONFIG_JVM_ARGS: '-Djava.security.egd=file:/dev/./urandom'
+  args:
+    creates: "{{ weblogic_mw_home }}/.configure.sh.run"
+    chdir: "{{ weblogic_mw_home }}"
+
+- name: Set WLST Environment and Create Domain
+  become: yes
+  become_user: "{{ weblogic_user }}"
+  shell:  "./createdomain.sh"
+  register: setwlsenv1
+  args:
+    chdir: "{{ weblogic_dir }}"
+
+- name: Replace <administration-port-enabled> property in config.xml
+  lineinfile:
+    path: "{{ weblogic_domain_home }}/config/config.xml"
+    regexp: '^  <administration-port-enabled>'
+    line: "  <administration-port-enabled>false</administration-port-enabled>"
+    backrefs: yes
+
+- name: create systemd service for weblogic adminserver
+  import_tasks: roles/common_tasks/systemd.yml
+  vars:
+    name: adminserver
+    description: Weblogic admin server
+    wanted_by: multi-user.target
+    type: simple
+    user: "{{ weblogic_user }}"
+    working_directory: "{{ weblogic_domain_home }}"
+    environment_vars:
+      - "'JAVA_HOME={{ weblogic_java_home }}'"
+      - "'MW_HOME={{ weblogic_mw_home }}'"
+      - "'WL_HOME={{ weblogic_wl_home }}'"
+      - "'CONFIG_JVM_ARGS=-Djava.security.egd=file:/dev/./urandom'"
+    exec_start: "{{ weblogic_domain_home }}/startAces3.sh"
+
+- name: create systemd service for weblogic node manager
+  import_tasks: roles/common_tasks/systemd.yml
+  vars:
+    name: nodemanager
+    description: Weblogic node manager server
+    wanted_by: multi-user.target
+    type: simple
+    user: "{{ weblogic_user }}"
+    working_directory: "{{ weblogic_domain_home }}"
+    environment_vars:
+      - "'JAVA_HOME={{ weblogic_java_home }}'"
+      - "'MW_HOME={{ weblogic_mw_home }}'"
+      - "'WL_HOME={{ weblogic_wl_home }}'"
+      - "'CONFIG_JVM_ARGS=-Djava.security.egd=file:/dev/./urandom'"
+    exec_start: "{{ weblogic_domain_home }}/bin/startNodeManager.sh"
+
+- include: post_tasks.yml  
+
+- name: wait for the adminserver to start and open the port
+  wait_for:
+    host: "{{groups['app'][0]}}"
+    port: "{{ weblogic_node_listen_port }}"
+    delay: 10
+    timeout: 120
+    state: started
+  ignore_errors: yes

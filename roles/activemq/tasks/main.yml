@@ -1,0 +1,157 @@
+---
+- name: Create a user group
+  group:
+    name: "{{ activemq_group }}"    
+  
+- name: Create a user and map to activemq group
+  user:
+    name: "{{ activemq_user }}"
+    group: "{{ activemq_group }}"
+
+- name: Create ActiveMQ Home Directory
+  become: yes
+  become_user: root
+  file:
+    dest: "{{ activemq_home_dir }}"
+    mode: '0755'
+    state: directory
+
+- name: Get ActiveMQ file
+  get_url:
+    url: "{{ activemq_download_url }}"
+    dest: "{{ activemq_home_dir }}"
+    mode: '0755'
+    url_username: "{{ activemq_download_username }}"
+    url_password: "{{ activemq_download_password }}" 
+
+- name: Unarchive ActiveMQ
+  unarchive:
+    src: "{{ activemq_home_dir }}/{{ activemq_install_filename }}"
+    dest: "{{ activemq_home_dir }}"
+    remote_src: yes
+    owner: "{{ activemq_user }}"
+    group: "{{ activemq_group }}"    
+    creates: "{{ activemq_home_root }}" 
+    mode: '0755'
+
+- name: Create a certificate for broker
+  shell: keytool -genkey -alias broker -keyalg RSA -keystore broker.ks -noprompt -dname "CN=broker, OU=Unit, O=org, L=city, C=country" -keypass pass12 -storepass keystore
+  args:
+    chdir: /etc/ssl
+  register: gencertbroker
+  ignore_errors: yes
+
+- debug:
+    msg: "{{ gencertbroker }}"
+
+- name: Export broker certificate
+  shell: keytool -export -alias broker -keystore broker.ks -file broker_cert -noprompt -storepass keystore
+  args:
+    chdir: /etc/ssl
+  register: exportcert
+  ignore_errors: yes      
+
+- debug:
+    msg: "{{ exportcert }}"  
+
+- name: Create a certificate for client
+  shell: keytool -genkey -alias client -keyalg RSA -keystore client.ks -noprompt -dname "CN=client, OU=Unit, O=org, L=city, C=country" -keypass pass12 -storepass keystore
+  args:
+    chdir: /etc/ssl
+  register: gencertclient
+  ignore_errors: yes   
+
+- debug:
+    msg: "{{ gencertclient }}"
+
+- name: Import client certificate
+  shell: keytool -import -alias client -keystore client.ts -file broker_cert -noprompt -storepass keystore
+  args:
+    chdir: /etc/ssl
+  register: importcertclient
+  ignore_errors: yes      
+
+- debug:
+    msg: "{{ importcertclient }}"   
+
+- name: Export client certificate    
+  shell: keytool -export -alias client -keystore client.ks -file client_cert -noprompt -storepass keystore
+  args:
+    chdir: /etc/ssl
+  register: exportcertclient
+  ignore_errors: yes
+
+- debug:
+     msg: "{{ exportcertclient }}"  
+
+- name: Establish client trust
+  shell: keytool -import -alias client -keystore broker.ts -file client_cert -noprompt -storepass keystore
+  args:
+    chdir: /etc/ssl
+  register: clienttrust
+  ignore_errors: yes
+
+- debug:
+    msg: "{{ clienttrust }}"                     
+
+- name: Copy broker files to activemq home directory.
+  copy:
+    src: "{{ item }}"
+    dest: "{{ activemq_home_root }}/conf"
+    remote_src: yes
+    owner: "{{ activemq_user }}"
+    group: "{{ activemq_group }}"
+    mode: '0755'
+  with_items:
+    - /etc/ssl/broker.ks
+    - /etc/ssl/broker.ts
+
+- name: Copy env configuration file
+  template:
+    src: activemq-env.j2
+    dest: /etc/default/activemq-instance-{{ activemq_instance_name }}
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy activemq.xml template
+  template:
+    src: activemq.xml.j2
+    dest: "{{ activemq_home_root }}/conf/activemq.xml"
+    mode: '0755'
+    owner: "{{ activemq_user }}"
+    group: "{{ activemq_group }}"
+
+- name: Change path to store log file
+  lineinfile:
+    dest: '{{ activemq_conf_dir }}/log4j.properties'
+    regexp: '^log4j.appender.logfile.file='
+    line: 'log4j.appender.logfile.file=/var/log/activemq-instance-{{ activemq_instance_name }}/activemq.log'
+    state: present
+  #notify:
+  #  - restart activemq
+
+- name: Copy broker file
+  template:
+    src: "{{ item.brokername }}.xml.j2"
+    dest: "{{ activemq_home_root }}/conf/{{ item.brokername }}.xml"
+    mode: '0755'
+    owner: "{{ activemq_user }}"
+    group: "{{ activemq_group }}"
+  with_items: "{{ brokers }}"      
+
+- name: Create systemd service for starting ActiveMQ
+  import_tasks: roles/common_tasks/systemd.yml
+  vars:
+    name: activemq-{{ activemq_version }}
+    description: ActiveMQ-{{ activemq_version }} Service
+    wanted_by: multi-user.target
+    type: simple
+    user: "{{ activemq_user }}" 
+    working_directory: "{{ activemq_home_root }}/bin"
+    exec_start: "{{ activemq_home_root }}/bin/activemq-admin start"     
+
+    
+
+
+

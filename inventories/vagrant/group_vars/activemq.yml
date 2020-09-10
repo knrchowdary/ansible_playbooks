@@ -1,0 +1,28 @@
+---
+
+brokers:
+  - brokername: anzBroker
+    brokerqueue1: AnzPlanningQueue
+    brokerqueue2: OpsQueueMC
+    brokerqueue3: OpsQueueEA
+    brokerqueue4: OpsQueueNA
+    brokerqueue5: OpsQueueANZ
+    physicalname1: AcesJMSModule!PlanningQueue
+    physicalname2: AcesJMSModule!OpsQueueMC
+    physicalname3: AcesJMSModule!OpsQueueEA
+    physicalname4: AcesJMSModule!OpsQueueNA
+    physicalname5: AcesJMSModule!OpsQueueANZ
+    connectorport: 1106
+    beansplanningxml: anzPlanningBeans.xml
+    beansopsxml: anzOpsBeans.xml
+    beansdaoxml: anzDaoBeans.xml
+  - brokername: azulBroker
+    brokerqueue1: AzulPlanningQueue
+    brokerqueue2: ADOpsQueue
+    physicalname1: AcesJMSModule!PlanningQueue
+    physicalname2: activemq:ADOpsQueue
+    connectorport: 1104
+    beansplanningxml: azulPlanningBeans.xml
+    beansopsxml: azulOpsBeans.xml
+    beansdaoxml: azulDaoBeans.xml
+

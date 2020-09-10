@@ -1,0 +1,15 @@
+---
+# tasks file for ping_federate
+- include: pre_tasks.yml
+
+- include: install.yml
+  when: ping_federate_is_installed is not defined
+
+- include: configure.yml
+
+- include: upgrade_plugin.yml
+
+- include: import.yml
+
+- include: post_tasks.yml
+

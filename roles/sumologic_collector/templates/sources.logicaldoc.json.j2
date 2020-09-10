@@ -1,0 +1,86 @@
+{
+  "api.version":"v1",
+  "sources":[{
+       "sourceType" : "SystemStats",
+       "name" : "Host_Metrics",
+       "interval" : 60000,
+       "metrics" : ["CPU_User", "CPU_Sys", "CPU_Idle", "CPU_IOWait", "CPU_LoadAvg_5min", "Disk_UsedPercent", "Mem_Used","Mem_Free"]
+     },
+     {
+    "name":"Aces LogicalDoc IndexerTask",
+    "description":"Aces LogicalDoc IndexerTask",
+    "category":"{{env | upper}}/{{server_type | upper}}/LogicalDoc/IndexerTask",
+    "automaticDateParsing":true,
+    "multilineProcessingEnabled":true,
+    "useAutolineMatching":true,
+    "forceTimeZone":false,
+    "timeZone": "America/New_York",
+    "filters":[],
+    "cutoffTimestamp":1550638800000,
+    "encoding":"UTF-8",
+    "pathExpression":"/home/logicaldoc/logicaldoc/logs/indexertask.log",
+    "blacklist":[],
+    "sourceType":"LocalFile"
+  },{
+    "name":"Aces LogicalDoc DMS",
+    "description":"Aces LogicalDoc DMS",
+    "category":"{{env | upper}}/{{server_type | upper}}/LogicalDoc/DMS",
+    "automaticDateParsing":true,
+    "multilineProcessingEnabled":true,
+    "useAutolineMatching":true,
+    "forceTimeZone":false,
+    "timeZone": "America/New_York",
+    "filters":[],
+    "cutoffTimestamp":1550785125000,
+    "encoding":"UTF-8",
+    "pathExpression":"/home/logicaldoc/logicaldoc/logs/dms.log",
+    "blacklist":[],
+    "sourceType":"LocalFile"
+  },{
+    "name":"Aces LogicalDoc TagCloudGenerator",
+    "description":"Aces LogicalDoc TagCloudGenerator",
+    "category":"{{env | upper}}/{{server_type | upper}}/LogicalDoc/TagCloudGenerator",
+    "automaticDateParsing":true,
+    "multilineProcessingEnabled":true,
+    "useAutolineMatching":true,
+    "forceTimeZone":false,
+    "timeZone": "America/New_York",
+    "filters":[],
+    "cutoffTimestamp":1550638800000,
+    "encoding":"UTF-8",
+    "pathExpression":"/home/logicaldoc/logicaldoc/logs/tagcloudgenerator.log",
+    "blacklist":[],
+    "sourceType":"LocalFile"
+  },{
+    "name":"Aces LogicalDoc IndexOptimizer",
+    "description":"Aces LogicalDoc IndexOptimizer",
+    "category":"{{env | upper}}/{{server_type | upper}}/LogicalDoc/IndexOptimizer",
+    "automaticDateParsing":true,
+    "multilineProcessingEnabled":true,
+    "useAutolineMatching":true,
+    "forceTimeZone":false,
+    "timeZone": "America/New_York",
+    "filters":[],
+    "cutoffTimestamp":1550785125000,
+    "encoding":"UTF-8",
+    "pathExpression":"/home/logicaldoc/logicaldoc/logs/indexoptimizer.log",
+    "blacklist":[],
+    "sourceType":"LocalFile"
+  },{
+    "name":"Aces LogicalDoc ProductNews",
+    "description":"Aces LogicalDoc ProductNews",
+    "category":"{{env | upper}}/{{server_type | upper}}/LogicalDoc/ProductNews",
+    "automaticDateParsing":true,
+    "multilineProcessingEnabled":true,
+    "useAutolineMatching":true,
+    "forceTimeZone":false,
+    "timeZone": "America/New_York",
+    "filters":[],
+    "cutoffTimestamp":1550785125000,
+    "encoding":"UTF-8",
+    "pathExpression":"/home/logicaldoc/logicaldoc/logs/productnews.log",
+    "blacklist":[],
+    "sourceType":"LocalFile"
+  }
+  ]
+}

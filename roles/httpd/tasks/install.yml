@@ -1,0 +1,85 @@
+---
+- name: debug apache_packages
+  debug: 
+    msg: "apache_packages = {{apache_packages}}"
+
+- name: Ensure Apache is installed on RHEL.
+  package:
+    name: "{{item}}"
+  loop: "{{ apache_packages }}"
+
+- name: mod_jk -- install required build packages
+  package:
+    name: "{{item}}"
+  loop: "{{ apache_packages_mod_jk }}"
+  when: apache_packages_install_mod_jk
+
+- name: mod_jk -- make install directory
+  file:
+    path: "{{ apache_mod_jk_install_dir }}"
+    state: directory    
+  when: apache_packages_install_mod_jk
+
+# - name: copy mod_jk source to filesystem
+#   copy:
+#     src: "files/mod_jk/{{apache_mod_jk_src}}"
+#     dest: "{{ apache_mod_jk_install_dir }}/{{apache_mod_jk_src}}"
+#     owner: root
+#     group: root
+#     mode: '0644'    
+#   when: apache_packages_install_mod_jk
+
+- name: mod_jk -- copy and untar file
+  unarchive:
+    src: "files/mod_jk/{{apache_mod_jk_src_name}}{{apache_mod_jk_src_ext}}"
+    dest: "{{ apache_mod_jk_install_dir }}"
+  when: apache_packages_install_mod_jk
+
+- name: mod_jk -- run configure 
+  command: "./configure --with-apxs=/usr/bin/apxs"
+  args:
+    chdir: "{{ apache_mod_jk_install_dir }}/{{apache_mod_jk_src_name}}/native"
+  when: apache_packages_install_mod_jk
+
+- name: mod_jk -- run make
+  command: "make"
+  args:
+    chdir: "{{ apache_mod_jk_install_dir }}/{{apache_mod_jk_src_name}}/native"
+  when: apache_packages_install_mod_jk
+
+- name: mod_jk -- run make install
+  command: "make install"
+  args:
+    chdir: "{{ apache_mod_jk_install_dir }}/{{apache_mod_jk_src_name}}/native"
+  when: apache_packages_install_mod_jk
+
+- name: mod_jk -- add mod_jk.conf
+  template:
+    src: mod_jk.conf.j2
+    dest: "{{ apache_server_root }}/conf.d/mod_jk.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart apache
+  when: apache_packages_install_mod_jk
+
+- name: mod_jk -- add worker.properties
+  template:
+    src: mod_jk_worker.properties.j2
+    dest: "{{ apache_server_root }}/conf.d/worker.properties"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart apache
+  when: apache_packages_install_mod_jk
+
+- name: mod_jk -- Allow mod_jk via httpd_log_t to modify /var/log/httpd/mod_jk.shm
+  sefcontext:
+    target: '/var/log/httpd(/.*)?'
+    setype: httpd_log_t
+    state: present
+  when: apache_packages_install_mod_jk
+
+- name: mod_jk -- Apply new SELinux file context to filesystem
+  command: restorecon -irv /var/log/httpd
+  when: apache_packages_install_mod_jk

@@ -1,0 +1,10 @@
+- name: Enable timestamp in linux history command
+  lineinfile:
+    path: "{{ base_profile_path }}"
+    line: "export HISTTIMEFORMAT='%F %T   '"
+
+- name: Reads and executes commands by using source
+  shell: "source {{ base_profile_path }}"
+  args:
+    executable: /bin/bash
+  ignore_errors: yes

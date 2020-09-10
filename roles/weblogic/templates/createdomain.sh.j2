@@ -1,0 +1,9 @@
+export MW_HOME={{ weblogic_mw_home }}
+export WL_HOME={{ weblogic_wl_home }}
+export JAVA_HOME={{ weblogic_java_home }}
+export PATH=$JAVA_HOME/bin:$PATH
+export CONFIG_JVM_ARGS=-Djava.security.egd=file:/dev/./urandom   
+source {{ weblogic_wl_home }}/server/bin/setWLSEnv.sh
+bash {{ weblogic_mw_home }}/oracle_common/common/bin/wlst.sh {{ weblogic_dir }}/wlst.config.py
+touch "{{ weblogic_mw_home }}/.create-domain.{{ weblogic_domain_name }}.run"
+source {{ weblogic_domain_home }}/bin/setDomainEnv.sh

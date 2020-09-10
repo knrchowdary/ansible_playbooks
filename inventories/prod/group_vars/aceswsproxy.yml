@@ -1,0 +1,19 @@
+---
+apache_timeout: 600
+
+apache_proxy_timeout: 600
+
+apache_proxy_override:
+  proxy: |
+    Order deny,allow
+    Allow from all
+  proxypass:
+    "/ACESWS": http://{{server_to_proxy[group_names[0]]}}/ACESWS
+    "/ctwebservicepilot": http://{{server2_to_proxy[group_names[0]]}}/ctwebservicepilot
+    "/ctwebservicecabin": http://{{server2_to_proxy[group_names[0]]}}/ctwebservicecabin
+  proxypass_reverse:
+    "/ACESWS": http://{{server_to_proxy[group_names[0]]}}/ACESWS
+    "/ctwebservicepilot": http://{{server2_to_proxy[group_names[0]]}}/ctwebservicepilot
+    "/ctwebservicecabin": http://{{server2_to_proxy[group_names[0]]}}/ctwebservicecabin
+
+apache_proxy_noindex_url: https://{{external_dns_name[group_names[0]]}}.{{server_domain_name}}/ACESWS

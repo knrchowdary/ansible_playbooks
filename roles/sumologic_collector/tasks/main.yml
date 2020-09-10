@@ -1,0 +1,100 @@
+---
+- name: determine the server type
+  set_fact: 
+    server_type: "{{item.split('_')[0]}}"
+  loop: "{{ group_names }}"
+  when: server_type is not defined and item not in ['dev','qa','uat','prod']
+
+- name: set new proxy servers to have server_type of proxy
+  set_fact: 
+    server_type: "proxy"
+  when: server_type is defined and server_type in ('azulcmextractor','acesproxy','aceswsproxy','client','hotelexpress','jrs','latamair','provider','ssoproxy')
+
+- name: debug server_type 
+  debug:
+    var: server_type
+ 
+- name: stop the collector (OLD WAY -- to be deprecated)
+  command: "service collector stop"
+  when: reinstall
+  ignore_errors: true
+
+- name: clear the {{sumo_base_dir}}
+  file:
+    path: "{{sumo_base_dir}}"
+    state: absent
+  when: reinstall
+
+- name: clear the {{sumo_installation_dir}}
+  file:
+    path: "{{sumo_installation_dir}}"
+    state: absent
+  when: reinstall and not needCollectorInstalled
+
+- name: create {{sumo_installation_dir}} folder
+  file:
+    path: "{{sumo_installation_dir}}"
+    state: directory
+    mode: 0755
+
+- name: create {{sumo_config_dir}} folder
+  file:
+    path: "{{sumo_config_dir}}"
+    state: directory
+    mode: 0755
+
+- name: debug server_type
+  debug:
+    msg: "server_type = {{server_type}}"
+
+- name: debug env
+  debug:
+    msg: "env = {{env}}"
+
+- name: debug sumo_username
+  debug:
+    msg: "sumo_username = {{sumo_username[server_type][env]}}"
+
+- name: debug template name
+  debug:
+    msg: "templates/sources.{{server_type}}.json.j2"
+
+- name: copy the sources.json file to the {{sumo_config_dir}} folder
+  template:
+    src: "templates/sources.{{server_type}}.json.j2"
+    dest: "{{sumo_config_dir}}/sources.json"
+
+- name: copy the sumo_credentials.txt file to the {{sumo_installation_dir}} folder
+  template:
+    src: "templates/sumo_credentials.txt.j2"
+    dest: "{{sumo_installation_dir}}/sumo_credentials.txt"
+
+- name: get the SumoCollector installation script and set it to be executable
+  get_url:
+    url: "{{sumo_installation_url}}"
+    dest: "{{sumo_installation_dir}}/{{sumo_installation_file}}"
+    mode: 744
+  when: needCollectorInstalled
+
+- name: execute the installation script
+  command: "{{sumo_installation_dir}}/{{sumo_installation_file}} -q -varfile sumo_credentials.txt"
+  args:
+    creates: "{{sumo_log_dir}}/collector.log"
+
+- name: set the fingerprint size
+  lineinfile:
+    dest: "{{sumo_config_dir}}/collector.properties"
+    regexp: "^collector.*fpSize\\s="
+    line: "collector.wildcard.fpSize = {{ sumologic_fpsize }}"
+  notify: restart collector
+
+# - name: install the sumologic.service systemd service file
+#   template:
+#     src: "templates/sumologic.service.j2"
+#     dest: "{{systemd_installation_dir}}/sumologic.service"
+
+# - name: enable the sumologic.service to start after boot
+#   command: "systemctl enable sumologic.service"
+
+# - name: start the collector
+#   command: "systemctl start sumologic.service"

@@ -1,0 +1,13 @@
+worker.list=balancer,stat
+worker.balancer.type=lb
+worker.balancer.balance_workers=airline_site1,airline_site2
+worker.stat.type=status
+worker.list=airline_site1,airline_site2
+worker.balancer.sticky_session=1
+
+
+{% for key, value in apache_mod_jk_worker_properties.iteritems() %}
+{% for k, v in value.iteritems() %}
+worker.{{key}}.{{ k }}={{ v }}
+{% endfor %}
+{% endfor %}

@@ -1,0 +1,55 @@
+{
+  "api.version":"v1",
+  "sources":[
+    {
+       "sourceType" : "SystemStats",
+       "name" : "Host_Metrics",
+       "interval" : 60000,
+       "metrics" : ["CPU_User", "CPU_Sys", "CPU_Idle", "CPU_IOWait", "CPU_LoadAvg_5min", "Disk_UsedPercent", "Mem_Used","Mem_Free"]
+     },
+    {
+        "name": "{{server_type | upper}} Tomcat Application Log",
+        "description": "{{server_type | upper}} Tomcat Application Log",
+        "category": "{{env | upper}}/{{server_type | upper}}/Tomcat/App",
+        "pathExpression": "/var/lib/tomcat8/logs/api-hotels.log",
+        "sourceType": "LocalFile",
+        "defaultDateFormats": [
+        {
+            "format": "yyyy-MM-dd HH:mm:ss,SSS",
+            "locator": "APIHOTELS ip-\\d+-\\d+-\\d+-\\d+ (.*) \\w+"
+        }],
+        "multilineProcessingEnabled": true,
+        "useAutolineMatching": false,
+        "manualPrefixRegexp": "^APIHOTELS ip-.*",
+        "contentType": "Other",
+        "forceTimeZone": false,
+        "timeZone": "Etc/useAutolineMatching",
+        "filters": [],
+        "cutoffTimestamp": 1550552400000,
+        "encoding": "UTF-8",
+        "blacklist": []
+    },
+    {
+        "name": "{{server_type | upper}} Tomcat Access Log",
+        "description": "{{server_type | upper}} Tomcat Access Log",
+        "category": "{{env | upper}}/{{server_type | upper}}/Tomcat/Access",
+        "pathExpression": "/var/lib/tomcat8/logs/localhost_access_log.*.txt",
+        "sourceType": "LocalFile",
+        "defaultDateFormats": [
+        {
+            "format": "dd/MMM/yyyy:HH:mm:ss ZZZZ",
+            "locator": ".*\\[(.*)\\].*"
+        }],
+        "multilineProcessingEnabled": true,
+        "useAutolineMatching": true,
+        "contentType": "Other",
+        "forceTimeZone": false,
+        "timeZone": "Etc/UTC",
+        "filters": [],
+        "cutoffTimestamp": 1550552400000,
+        "encoding": "UTF-8",
+        "blacklist": []
+    }
+
+  ]
+}

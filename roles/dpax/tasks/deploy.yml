@@ -1,0 +1,63 @@
+---
+- name: copy the application property file
+  template:
+     src: tomcat8.j2
+     dest: "/etc/default/tomcat8"
+     owner: root
+     group: root
+     mode: '0644'
+  notify: restart tomcat8
+  tags: copy_template
+
+- name: "remove war file from {{ dpax_opt_dir }}"
+  file:
+    path: "{{ dpax_opt_dir }}/{{ dpax_artifact_name }}"
+    state: absent
+    
+# maven_artifact module requires the lxml python library installed
+- name:  download from nexus
+  maven_artifact:
+    group_id: "{{ dpax_group_id }}"
+    artifact_id: "{{ dpax_artifact_id }}"
+    version: "{{ version }}"
+    extension: "{{ dpax_package_type }}"
+    repository_url: "{{ dpax_mvn_repo }}"
+    username: "{{ dpax_nexus_username }}"
+    password: "{{ dpax_nexus_password }}"
+    dest: "{{ dpax_opt_dir }}/{{ dpax_artifact_name }}"
+    owner: "{{ dpax_tomcat_user }}" 
+    group: "{{ dpax_tomcat_group }}"
+  register: download_war
+  tags: download
+
+- name: removing old war file from webapps
+  file:
+    path: "{{ item }}"
+    state: absent
+  register: undeployment
+  with_items:
+    - "{{ dpax_tomcat_deploy }}/{{ dpax_artifact_name }}"
+    - "{{ dpax_tomcat_home }}/work/Catalina/localhost/{{ dpax_folder_name }}"
+    - "{{ dpax_tomcat_home }}/temp/{{ dpax_folder_name }}"
+  tags: undeploy
+
+- name: copy war file to tomcat8/webapps folder
+  copy:
+    src: "{{ dpax_opt_dir }}/{{ dpax_artifact_name }}"
+    dest: "{{ dpax_tomcat_deploy }}/{{ dpax_artifact_name }}"
+    owner: "{{ dpax_tomcat_user }}" 
+    group: "{{ dpax_tomcat_group }}"
+    remote_src: yes
+  register: deployment
+  tags: deploy
+
+- name: restart tomcat8
+  service:
+    name: tomcat8
+    state: restarted
+  when: deployment is succeeded
+
+- name: "remove war file from {{ dpax_opt_dir }}"
+  file:
+    path: "{{ dpax_opt_dir }}/{{ dpax_artifact_name }}"
+    state: absent

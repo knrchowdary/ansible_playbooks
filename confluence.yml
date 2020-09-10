@@ -1,0 +1,11 @@
+---
+# This playbook deploys Confluence to specified host on AWS.
+
+- hosts: "{{ host_name | default('tag_Name_*_jira*') }}"
+  roles:
+     - { role: base }
+     - { role: java }
+     - { role: confluence }
+  become: yes
+  become_method: sudo
+  remote_user: ansible

@@ -1,0 +1,9 @@
+--- 
+- name: New Jasper Version Installation
+  hosts: "{{ server_groups }}"
+  roles:
+    - base
+    - jasper
+  become: yes
+
+

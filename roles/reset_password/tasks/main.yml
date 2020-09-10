@@ -1,0 +1,55 @@
+---
+
+- name: generate password as reset_password_newpass is not supplied
+  delegate_to: localhost
+  command: openssl rand -base64 32
+  register: newpass
+  when: (reset_password_newpass is not defined) or (reset_password_newpass is none) or (reset_password_newpass == "")
+
+- name: force newpass to be empty since reset_password_newpass is supplied
+  delegate_to: localhost
+  set_fact:
+    newpass: {}
+  when: (reset_password_newpass is defined) and (reset_password_newpass is not none) and (reset_password_newpass != "")
+
+# - name: debug newpass
+#   debug:
+#     msg: "newpass = {{newpass}}"
+
+# if a newpass has been generated hash it
+- name: generate password hash for newpass
+  delegate_to: localhost
+  set_fact:
+    password_hash: "{{ newpass.stdout | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
+  when: (newpass is defined) and (newpass.stdout is defined) and (newpass is not none) and (newpass.stdout is not none) and (newpass != "") and (newpass.stdout != "")
+
+- name: force vault var to be read prior to filter
+  set_fact:
+    reset_password_newpass: "{{reset_password_newpass}}"
+  when: (reset_password_newpass is defined) and (reset_password_newpass is not none) and (reset_password_newpass != "")
+
+- name: strip trailing newline
+  set_fact:
+    trim_reset_password_newpass: "{{ reset_password_newpass | replace('\n', '') }}"
+  when: (reset_password_newpass is defined) and (reset_password_newpass is not none) and (reset_password_newpass != "")
+
+# - name: debug reset_password_newpass
+#   debug:
+#     msg: "trim_reset_password_newpass = {{trim_reset_password_newpass}}"
+
+# if a password was supplied hash it
+- name: generate password hash for reset_password_newpass
+  delegate_to: localhost
+  set_fact:
+    password_hash: "{{ trim_reset_password_newpass | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
+  when: (reset_password_newpass is defined) and (reset_password_newpass is not none) and (reset_password_newpass != "")
+
+# - name: debug password_hash
+#   debug:
+#     msg: "password_hash = {{password_hash}}"
+
+- name: "change password for {{username}} user"
+  user:
+    name: "{{username}}"
+    password: "{{ password_hash }}"
+  when: password_hash is defined

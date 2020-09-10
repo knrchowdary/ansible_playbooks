@@ -1,0 +1,27 @@
+---
+
+- name: download jenkins
+  get_url: 
+    dest: "{{ jenkins_repo_dir }}"
+    url: "{{ jenkins_url }}"
+    url_username: "{{ jenkins_url_username }}"
+    url_password: "{{ jenkins_url_password }}"
+  register: jenkins_task_download
+  until: jenkins_task_download is succeeded
+  become: yes
+  when: jenkins_version_installed is not defined or oracle_java_version_installed != oracle_java_version_string
+
+- name: get name of downloaded folder
+  shell: ls -al {{ jenkins_repo_dir }}/jenkins*
+  register: jenkins_temp_file_name
+
+- name: install jenkins key
+  shell: rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+
+- name: install jenkins via yum
+  package: 
+    name: jenkins
+
+
+
+  

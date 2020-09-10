@@ -1,0 +1,35 @@
+readTemplate('{{ weblogic_dir }}/aces3Domain.jar')
+
+set('AdministrationPort', {{ weblogic_admin_listen_port }})
+set('AdministrationPortEnabled', 'true')
+
+cd('/Servers/{{ weblogic_adminserver_name }}')
+set('ListenAddress', '{{ weblogic_node_listen_address }}')
+set('ListenPort', {{ weblogic_node_listen_port }})
+create('{{ weblogic_adminserver_name }}', 'SSL')
+cd('SSL/{{ weblogic_adminserver_name }}')
+set('Enabled', 'True')
+set('ListenPort', {{ weblogic_node_listen_ssl_port }})
+
+##set JDBCDriverParams
+{% if weblogic_jdbc_params is defined %}
+{% for item in weblogic_jdbc_params %}
+
+cd('{{ item.path }}')
+set('URL','{{ item.url }}')
+set('PasswordEncrypted', '{{ item.username }}')
+cd('Properties/NO_NAME_0/Property/user')
+cmo.setValue('{{ item.password }}')
+
+{% endfor %}
+{% endif %}
+
+## set admin user password
+cd('/Security/mydomain/User/{{ weblogic_domain_username }}')
+cmo.setName('{{ weblogic_domain_username }}')
+cmo.setPassword('{{ weblogic_domain_password }}')
+
+setOption('OverwriteDomain', 'true')
+writeDomain('/opt/software/Oracle/user_projects/domains/aces3Domain')
+closeTemplate()
+exit()

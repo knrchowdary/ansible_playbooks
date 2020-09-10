@@ -1,0 +1,55 @@
+---
+
+- name: determine if Java is already installed
+  shell: java -version 2>&1 | grep version | awk '{print $3}' | sed 's/"//g'
+  register: jenkins_temp_java_version
+  changed_when: jenkins_temp_java_version.rc != 0
+  failed_when: no
+
+- debug: 
+    var: jenkins_temp_java_version
+
+
+- name: failed if Java is not installed
+  fail: 
+    msg: Java is not installed
+  when: jenkins_temp_java_version.changed
+
+- name: failed when required java version os not installed
+  fail:
+    msg: "Java version required >= 1.8 but got {{ jenkins_temp_java_version.stdout }}"
+  when: jenkins_temp_java_version.stdout is not version_compare(jenkins_required_java_version, '>=') 
+
+- name: create jenkins group
+  group: 
+    name: "{{ jenkins_group }}"
+    state: present
+
+- name: create jenkins user
+  user:
+    name: "{{ jenkins_user }}"
+    groups: "{{ jenkins_group }}"
+
+- name: start jenkins
+  stat:
+    path: "service jenkins start"
+  register: stat_result
+
+
+- name: if run file found == installed
+  set_fact: 
+    jenkins_is_installed: true
+  when: stat_result.stat.exists
+
+
+# - name: detect previous jenkins version installed
+  
+
+# install firewalld
+- name: install firewalld
+  package:
+    name: "{{item}}"
+  with_items:
+    - firewalld
+    - firewall-config
+

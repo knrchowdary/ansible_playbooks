@@ -1,0 +1,91 @@
+---
+# Usage: 
+# - name: create systemd service for ping-federate
+#   import_tasks: roles/common_tasks/systemd.yml
+#   vars:
+#     name: ping_federate
+#     description: PingFederate ${PF_VERSION}
+#     wanted_by: multi-user.target
+#     type: simple
+#     user: "{{ ping_federate_user }}"
+#     working_directory: "{{ ping_federate_dir }}"
+#     environment: 
+#       - "JAVA_HOME={{ ping_federate_java_home }}"
+#     exec_start: "{{ ping_federate_dir }}/bin/run.sh"
+#     exec_stop: "{{ ping_federate_dir }}/sbin/pingfederate-shutdown.sh"
+
+  ## Required variables
+  # [Unit]
+  # name [str] (required)
+  # description [str] (optional)
+  # wants [str] (optional)
+  # requires [str] (optional)
+  # before [str] (optional)
+  # after [str] (optional)
+  # assert_architecture [arr] (optional)
+  # assert_virtualization [arr] (optional)
+  # assert_host [arr] (optional)
+  # assert_kernel_command_line [arr] (optional)
+  # assert_kernel_version [arr] (optional)
+  # assert_security [arr] (optional)
+  # assert_capability [arr] (optional)
+  # assert_acpower [arr] (optional)
+  # assert_needs_update [arr] (optional)
+  # assert_first_boot [arr] (optional)
+  # assert_path_exists [arr] (optional)
+  # assert_path_exists_glob [arr] (optional)
+  # assert_path_is_directory [arr] (optional)
+  # assert_path_is_symbolic_link [arr] (optional)
+  # assert_path_is_mount_point [arr] (optional)
+  # assert_path_is_read_write [arr] (optional)
+  # assert_directory_not_empty [arr] (optional)
+  # assert_file_not_empty [arr] (optional)
+  # assert_file_is_executable [arr] (optional)
+  # assert_user [arr] (optional)
+  # assert_group [arr] (optional)
+  # assert_control_group_controller [arr] (optional)
+
+  # [Service]
+  # type [str] (optional)
+  # pid_file [str] (optional)
+  # timeout_sec [str] (optional)
+  # restart_sec [str] (optional)
+  # restart [str] (optional)
+  # environment [arr] (optional)
+  # environment_file [str] (optional)
+  # working_directory (optional)
+  # user [str] (optional)
+  # group [str] (optional)
+  # oom_score_adjust [str] (optional)
+  # nice [str] (optional)
+  # exec_stop [str or array] (optional)
+  # exec_stop_post [str or array] (optional)
+  # exec_reload [str or array] (optional)
+  # exec_start_pre [str or array] (optional)
+  # exec_start_post [str or array] (optional)
+  # exec_start [str or array] (optional)
+  # standard_input [str] (optional)
+  # standard_output [str] (optional)
+  # standard_error [str] (optional)
+
+  # [Install]
+  # wanted_by [str] (optional)
+  # required_by [str] (optional)
+
+  ## Other variable 
+  # state: 
+  # enabled: 
+  # daemon_reload: 
+
+
+- name: create template for systemd 
+  template: 
+    src: etc/systemd/system/systemd.service.j2
+    dest: "/etc/systemd/system/{{ name }}.service"
+
+- name: enable systemd service
+  systemd: 
+    name: "{{ name }}"
+    state: "{{ state | default('started') }}"
+    enabled: "{{ enabled | default(true) }}"
+    daemon_reload: "{{ daemon_reload | default(true) }}"

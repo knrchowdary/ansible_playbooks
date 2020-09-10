@@ -1,0 +1,12 @@
+---
+
+## httpd
+apache_ssl: {}
+apache_proxy_override:
+  proxypass:
+    "/sso": http://{{server_to_proxy[group_names[0]]}}
+    "/SUPPLIER":  http://{{server2_to_proxy[group_names[0]]}}/SUPPLIER
+
+  proxypass_reverse:
+    "/sso": http://{{server_to_proxy[group_names[0]]}}
+    "/SUPPLIER":  http://{{server2_to_proxy[group_names[0]]}}/SUPPLIER

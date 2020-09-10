@@ -1,0 +1,17 @@
+---
+apache_timeout: 3600
+
+apache_extra_config_single_value_override: 
+  DirectoryIndex: index.html
+
+apache_proxy_override:
+  proxypass:
+    "^/$": http://{{server_to_proxy[group_names[0]]}}/ACESAIR
+    "/ACES": http://{{server_to_proxy[group_names[0]]}}/ACESAIR
+    "/ACESAIR": http://{{server_to_proxy[group_names[0]]}}/ACESAIR
+    "/ACESCLIENT": http://{{server2_to_proxy[group_names[0]]}}/ACESCLIENT
+  proxypass_reverse:
+    "^/$": http://{{server_to_proxy[group_names[0]]}}/ACESAIR
+    "/ACES": http://{{server_to_proxy[group_names[0]]}}/ACESAIR
+    "/ACESAIR": http://{{server_to_proxy[group_names[0]]}}/ACESAIR
+    "/ACESCLIENT": http://{{server2_to_proxy[group_names[0]]}}/ACESCLIENT

@@ -1,0 +1,11 @@
+---
+- name: restart sonarqube
+  service:
+    name: sonarqube
+    state: restarted
+  when: sysctl.changed
+  
+- name: restart firewalld
+  service:
+    name: firewalld
+    state: restarted    

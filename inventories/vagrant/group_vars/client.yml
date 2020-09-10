@@ -1,0 +1,22 @@
+---
+
+## httpd
+apache_ssl: {}
+apache_timeout: 3600
+
+apache_extra_config_single_value_override: 
+  DirectoryIndex: index.html
+
+apache_proxy_override:
+  proxypass:
+    "/ACESSUPPLIER": http://{{server_to_proxy[group_names[0]]}}/ACESSUPPLIER
+    "/assets": http://{{server_to_proxy[group_names[0]]}}/assets
+    "/ACESAUTH": http://{{server_to_proxy[group_names[0]]}}/ACESAUTH/
+    "/ACES": http://{{server_to_proxy[group_names[0]]}}/ACES
+    "/ACESCLIENT": http://{{server_to_proxy[group_names[0]]}}/ACESCLIENT
+  proxypass_reverse:
+    "/ACESSUPPLIER": http://{{server_to_proxy[group_names[0]]}}/ACESSUPPLIER
+    "/assets": http://{{server_to_proxy[group_names[0]]}}/assets
+    "/ACESAUTH": http://{{server_to_proxy[group_names[0]]}}/ACESAUTH/
+    "/ACES": http://{{server_to_proxy[group_names[0]]}}/ACES
+    "/ACESCLIENT": http://{{server_to_proxy[group_names[0]]}}/ACESCLIENT

@@ -1,0 +1,77 @@
+---
+- name: update curl (resposible to update ca-certs)
+  yum: 
+    name: curl
+    #enablerepo: ol6_latest
+    state: latest
+  when: ansible_distribution == 'OracleLinux' and ansible_distribution_major_version == "6"
+
+- name: update curl (resposible to update ca-certs)
+  yum: 
+    name: curl
+    #enablerepo: ol7_latest
+    state: latest
+  when: ansible_distribution == 'OracleLinux' and ansible_distribution_major_version == "7"
+
+- name: enable yum repository
+  yum_repository: 
+    name: "{{ item.key }}"
+    description: "{{ item.value.description }}"
+    baseurl: "{{ item.value.baseurl }}"
+    gpgcheck: "{{ item.value.gpgcheck }}"
+    enabled: "{{ item.value.enabled }}"
+    gpgkey: "{{ item.value.gpgkey }}"
+    file: "{{ item.value.file | default(item.key) }}"
+  with_dict: 
+    - "{{ base_yum_repo_oracle_7 }}"
+  when: ansible_distribution == 'OracleLinux' and ansible_distribution_major_version == "7"
+
+- name: enable yum repository
+  yum_repository: 
+    name: "{{ item.key }}"
+    description: "{{ item.value.description }}"
+    baseurl: "{{ item.value.baseurl }}"
+    mirrorlist: "{{ item.value.mirrorlist }}"
+    failovermethod: "{{ item.value.failovermethod }}"
+    gpgcheck: "{{ item.value.gpgcheck }}"
+    enabled: "{{ item.value.enabled }}"
+    gpgkey: "{{ item.value.gpgkey }}"
+    file: "{{ item.value.file | default(item.key) }}"
+  with_dict: 
+    - "{{ base_yum_repo_oracle_6 }}"
+  when: ansible_distribution == 'OracleLinux' and ansible_distribution_major_version == "6"
+
+- name: enable yum repository
+  yum_repository: 
+    name: "{{ item.key }}"
+    description: "{{ item.value.description }}"
+    baseurl: "{{ item.value.baseurl }}"
+    gpgcheck: "{{ item.value.gpgcheck }}"
+    enabled: "{{ item.value.enabled }}"
+    gpgkey: "{{ item.value.gpgkey }}"
+    file: "{{ item.value.file | default(item.key) }}"
+  with_dict: 
+    - "{{ base_yum_repo_centos }}"
+  when: ansible_distribution == 'CentOS'
+
+
+
+- name: install default packages for linux 7
+  package: 
+    name: "{{ item }}"
+  with_items: 
+    - "{{ base_packages_7 }}"
+  when: ansible_distribution_major_version == "7"
+
+- name: install default packages for linux 6
+  package: 
+    name: "{{ item }}"
+  with_items: 
+    - "{{ base_packages_6 }}"
+  when: ansible_distribution_major_version == "6"
+
+- name: Install packages using pip
+  pip:
+    name: "{{ item }}" 
+    state: present
+  with_items: "{{ base_python_requirements }}"

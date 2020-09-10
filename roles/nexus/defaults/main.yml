@@ -1,0 +1,10 @@
+---
+nexus_version: "3.0.0-03"
+nexus_mirror: "https://download.sonatype.com/nexus/3"
+nexus_package: "nexus-{{ nexus_version }}-unix.tar.gz"
+nexus_sources_url: "{{ nexus_mirror }}/{{ nexus_package }}"
+nexus_download_dir: /tmp
+nexus_installation_path: /opt
+nexus_home_dir: "/opt/nexus"
+nexus_user: nexus
+nexus_group: nexus

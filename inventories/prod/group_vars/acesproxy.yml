@@ -1,0 +1,27 @@
+---
+
+apache_listen_port: 8197
+
+apache_ifmodule_override:
+  "mod_weblogic.c":
+    WebLogicCluster: "{{weblogic_cluster_server1[group_names[0]]}},{{weblogic_cluster_server2[group_names[0]]}}"
+    MatchExpression: /*
+    SecureProxy: "OFF"
+    KeepAliveEnabled: "On"
+    KeepAliveSecs: 7200
+    Idempotent: "OFF"
+    WLIOTimeoutSecs: 7200
+
+apache_location_override:
+  "/weblogic":
+    WebLogicCluster: "{{weblogic_cluster_server1[group_names[0]]}}"
+    PathTrim: /weblogic
+
+apache_proxy_override:
+  proxy: |
+    Order deny,allow
+    Allow from all
+  proxypass: {}
+  proxypass_reverse: {}
+
+apache_proxy_noindex_url: {}

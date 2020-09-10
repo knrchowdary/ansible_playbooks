@@ -1,0 +1,17 @@
+---
+
+- name: start firewalld
+  service:
+    name: firewalld
+    enabled: yes
+    state: started
+
+- name: open port 9000 for SonarQube
+  firewalld:
+    zone: public
+    port: 9000/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  notify: 
+    - restart firewalld

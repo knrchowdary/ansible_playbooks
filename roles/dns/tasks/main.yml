@@ -1,0 +1,11 @@
+---
+- name: modifying resolv.conf file to /etc/resolv.conf
+  template:
+    src: "resolv.conf.j2"
+    dest: "/etc/resolv.conf"
+    backup: yes
+    force: yes
+    mode: 0644
+  when: 
+    - dns_nameserver is defined
+    - dns_search is defined

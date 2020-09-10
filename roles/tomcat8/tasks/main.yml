@@ -1,0 +1,100 @@
+---
+- name: Create a user group
+  group:
+    name: "{{ tomcat8_group }}"
+
+- name: Create a tomcat user
+  user:
+    name: "{{ tomcat8_user }}"
+    group: "{{ tomcat8_group }}"
+
+- name: Create Tomcat Home Directory
+  file:
+    dest: "{{ tomcat8_home_dir }}"
+    owner: "{{ tomcat8_user }}"
+    group: "{{ tomcat8_group }}"    
+    mode: '0755'
+    state: directory 
+
+- name: Download Tomcat8
+  get_url:
+    dest: "{{ tomcat8_home_dir }}/apache-tomcat-{{ tomcat8_version }}.zip"
+    url: "{{ tomcat8_url }}"
+    url_username: "{{ tomcat8_url_username }}"
+    url_password: "{{ tomcat8_url_password }}"
+    owner: "{{ tomcat8_user }}"
+    group: "{{ tomcat8_group }}"    
+
+- name: Unarchive Tomcat
+  unarchive:
+    src: "{{ tomcat8_home_dir }}/apache-tomcat-{{ tomcat8_version }}.zip"
+    dest: "{{ tomcat8_home_dir }}"
+    remote_src: yes  
+    owner: "{{ tomcat8_user }}"
+    group: "{{ tomcat8_group }}"
+    creates: "{{ tomcat8_home_dir }}/apache-tomcat-{{ tomcat8_version }}"         
+
+- name: Create symlink for "tomcat" to the installation directory
+  file:
+    src: "{{ tomcat8_home_dir }}/{{ tomcat8_name }}"
+    dest: "{{ tomcat8_home_dir }}/tomcat8"
+    owner: "{{ tomcat8_user }}"
+    group: "{{ tomcat8_group }}"
+    state: link
+
+- name: Change file permission
+  file:
+    path: "{{ tomcat8_home_dir }}/{{ tomcat8_name }}"
+    owner: "{{ tomcat8_user }}"
+    group: "{{ tomcat8_group }}"
+    mode: '0755'
+    recurse: true
+
+- name: ensure port is configured for environment
+  lineinfile:
+    path: "{{ tomcat8_home_dir }}/{{ tomcat8_name }}/conf/server.xml"
+    regexp: '^    <Connector port="8080" protocol="HTTP/1\.1"'
+    line: '    <Connector port="{{ tomcat8_port }}" protocol="HTTP/1.1"'
+    owner: "{{ tomcat8_user }}"
+    group: "{{ tomcat8_group }}"
+    mode: '0644'    
+
+- name: Create tomcat-users.xml
+  template:
+    src: tomcat-users.xml.j2
+    dest: "{{ tomcat8_install_path }}/conf/tomcat-users.xml"
+    owner: "{{ tomcat8_user }}"
+    group: "{{ tomcat8_group }}"
+    mode: '0755'
+  
+- name: Modify context.xml file in manager directory.
+  template:
+    src: context.xml.j2
+    dest: "{{ tomcat8_install_path }}/webapps/manager/META-INF/context.xml"
+    owner: "{{ tomcat8_user }}"
+    group: "{{ tomcat8_group }}"
+    mode: '0755'       
+
+- name: Modify context.xml file in host-manager directory.
+  template:
+    src: context-new.xml.j2
+    dest: "{{ tomcat8_install_path }}/webapps/host-manager/META-INF/context.xml"
+    owner: "{{ tomcat8_user }}"
+    group: "{{ tomcat8_group }}"
+    mode: '0755'      
+
+- name: Create systemd service for starting tomcat
+  import_tasks: roles/common_tasks/systemd.yml
+  vars:
+    name: tomcat8
+    description: tomcat8 Service
+    wanted_by: multi-user.target
+    type: simple
+    user: "{{ tomcat8_user }}"
+    environment_vars:
+     - "'JAVA_HOME={{ tomcat8_java_home }}'"
+     - "'CATALINE_HOME={{ tomcat8_catalina_home }}'"
+    working_directory: "{{ tomcat8_install_path }}/bin"
+    exec_start: "{{ tomcat8_install_path }}/bin/catalina.sh run"
+
+- include: post_tasks.yml    

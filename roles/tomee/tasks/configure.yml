@@ -1,0 +1,48 @@
+---
+- name: ensure file permission to pingfederate user and group
+  file:
+    dest: "{{ tomee_dir }}/{{tomee_name}}"
+    owner: "{{ tomee_user }}"
+    group: "{{ tomee_group }}"
+    recurse: yes
+
+- name: ensure port is configured for environment
+  lineinfile:
+    path: "{{ tomee_dir }}/{{tomee_name}}/conf/server.xml"
+    regexp: '^    <Connector port="3080" protocol="HTTP/1\.1"'
+    line: '    <Connector port="{{tomee_port}}" protocol="HTTP/1.1"'
+    owner: "{{tomee_user}}"
+    group: "{{tomee_group}}"
+    mode: 0644
+
+- name: ensure port is configured for environment
+  lineinfile:
+    path: "{{ tomee_dir }}/{{tomee_name}}/conf/server.xml"
+    regexp: '^<Server port="3081" shutdown="SHUTDOWN">'
+    line: '<Server port="{{tomee_shutdown_port}}" shutdown="SHUTDOWN">'
+    owner: "{{tomee_user}}"
+    group: "{{tomee_group}}"
+    mode: 0644
+
+
+- name: create systemd service for tomee
+  import_tasks: roles/common_tasks/systemd.yml
+  vars:
+    name: tomee
+    state: stopped
+    description: TOMEE ${tomee_version}
+    wanted_by: multi-user.target
+    type: simple
+    user: "{{ tomee_user }}"
+    working_directory: "{{ tomee_dir }}"
+    environment_vars: 
+     - "'JAVA_HOME={{ tomee_java_home }}'"
+    exec_start: "{{ tomee_dir }}/{{tomee_name}}/bin/startup.sh"
+    exec_stop: "{{ tomee_dir }}/{{tomee_name}}/bin/shutdown.sh"
+  ignore_errors: true
+
+- name: make sure tomee service is up and running
+  service: 
+    name: tomee
+    state: started
+  when: tomee_start_service

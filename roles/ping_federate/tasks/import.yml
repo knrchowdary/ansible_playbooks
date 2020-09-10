@@ -1,0 +1,17 @@
+---
+
+- name: Import configuration archive
+  get_url: 
+    dest: "{{ ping_federate_import_dest }}"
+    url: "{{ ping_federate_config_url }}"
+    url_username: "{{ ping_federate_url_username }}"
+    url_password: "{{ ping_federate_url_password }}"
+    mode: '0644'
+    owner: "{{ ping_federate_user }}"
+    group: "{{ ping_federate_group }}" 
+    force: yes
+  register: ping_federation_config_download
+  until: ping_federation_config_download is succeeded
+  become: yes
+   
+  

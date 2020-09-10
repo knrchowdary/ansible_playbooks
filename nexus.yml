@@ -1,0 +1,8 @@
+---
+- hosts: "{{server_groups}}"
+  roles:
+    - base
+    - java
+    - nexus
+  become: yes
+  become_method: sudo

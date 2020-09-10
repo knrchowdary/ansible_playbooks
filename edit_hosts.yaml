@@ -1,0 +1,9 @@
+---
+# This playbook attaches a server or group of servers to AD.
+
+- hosts: "{{server_groups}}"
+  roles:
+    - role: edit_hosts
+  become: yes
+  become_method: sudo
+  remote_user: ansible

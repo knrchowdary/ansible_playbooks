@@ -1,0 +1,53 @@
+## Usage: 
+# - name: Download ping federate
+#   import_tasks: roles/common_tasks/get_url.yml
+#   vars:
+#     src_url: http://10.10.103.162:8081/repository/thirdparty-release-raw/pingfederate-9.2.3.zip
+#     src_url_username: ""
+#     src_url_password: ""
+#     dest_path: /opt/ping_federate.zip
+
+
+## Required variables
+# src_url [str] (required)
+# src_url_username [str] (required) - but keep "" if no username
+# src_url_password [str] (required) - but keep "" if no password
+# dest_path [str] (required) - Destination path where to download
+
+# Created a head request to downloaded URL using URI module 
+- name: Get the information from the dest_location
+  uri:
+    url: "{{ src_url }}"
+    method: HEAD
+    url_username: "{{ src_url_username }}"
+    url_password: "{{ src_url_password }}"
+    return_content: yes
+    validate_certs: no
+  register: url_info
+
+# Getting Last-modified and content-length information from header
+- debug:
+    msg: 
+     - " content_length = {{ url_info.content_length }}"
+     - " last_modified = {{ url_info.last_modified }}"
+# Checking if file is already downloaded
+- name: check file exists or not
+  stat: 
+    path: "{{ dest_path }}"
+  register: validate
+# validating file according to  content length. 
+- name: check the content length of file
+  shell: ls -l "{{ dest_path }}" | cut -d " " -f5
+  register: file_size
+  when: validate.stat.exists
+# Download file only if above validation failed
+- name: download from url
+  get_url: 
+    url: "{{ src_url }}"
+    dest: "{{ dest_path }}"
+    url_username: "{{ src_url_username }}"
+    url_password: "{{ src_url_password }}"
+  when: validate.stat.exists == false or file_size.stdout != url_info.content_length
+  register: out
+- debug: 
+    var: out

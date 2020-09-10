@@ -1,0 +1,10 @@
+--- 
+- name: ACES2 deployment
+  hosts: "{{ server_groups }}"
+  roles:
+    #- base
+    - ACES2
+  become: yes
+  become_method: sudo
+
+

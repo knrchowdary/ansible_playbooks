@@ -1,0 +1,6 @@
+---
+- name: jira restart
+  service: name=jira state=restarted
+
+- name: firewalld restart
+  service: name=firewalld state=restarted

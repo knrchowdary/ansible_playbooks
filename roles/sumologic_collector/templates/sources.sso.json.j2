@@ -1,0 +1,61 @@
+{
+  "api.version":"v1",
+  "sources":[{
+       "sourceType" : "SystemStats",
+       "name" : "Host_Metrics",
+       "interval" : 60000,
+       "metrics" : ["CPU_User", "CPU_Sys", "CPU_Idle", "CPU_IOWait", "CPU_LoadAvg_5min", "Disk_UsedPercent", "Mem_Used","Mem_Free"]
+     },
+     {
+        "name": "SSO PingFederated Application Log",
+        "description": "SSO PingFederated Application Log",
+        "category": "{{env | upper}}/{{server_type | upper}}/PingFederated/App",
+        "pathExpression": "/home/{{sumo_username[server_type][env]}}/log/server.log",
+        "sourceType": "LocalFile",
+        "automaticDateParsing": true,
+        "multilineProcessingEnabled": true,
+        "useAutolineMatching": true,
+        "contentType": "Other",
+        "forceTimeZone": false,
+        "timeZone": "Etc/UTC",
+        "filters": [],
+        "cutoffTimestamp": 1550552400000,
+        "encoding": "UTF-8",
+        "blacklist": []
+    },
+    {
+        "name": "SSO PingFederated Transaction Log",
+        "description": "SSO PingFederated Transaction Log",
+        "category": "{{env | upper}}/{{server_type | upper}}/PingFederated/Transaction",
+        "pathExpression": "/home/{{sumo_username[server_type][env]}}/log/transaction.log",
+        "sourceType": "LocalFile",
+        "automaticDateParsing": true,
+        "multilineProcessingEnabled": true,
+        "useAutolineMatching": true,
+        "contentType": "Other",
+        "forceTimeZone": false,
+        "timeZone": "Etc/UTC",
+        "filters": [],
+        "cutoffTimestamp": 1550552400000,
+        "encoding": "UTF-8",
+        "blacklist": []
+    },
+    {
+        "name": "SSO PingFederated Admin Log",
+        "description": "SSO PingFederated Admin Log",
+        "category": "{{env | upper}}/{{server_type | upper}}/PingFederated/Admin",
+        "pathExpression": "/home/{{sumo_username[server_type][env]}}/log/admin.log",
+        "sourceType": "LocalFile",
+        "automaticDateParsing": true,
+        "multilineProcessingEnabled": true,
+        "useAutolineMatching": true,
+        "contentType": "Other",
+        "forceTimeZone": false,
+        "timeZone": "Etc/UTC",
+        "filters": [],
+        "cutoffTimestamp": 1550552400000,
+        "encoding": "UTF-8",
+        "blacklist": []
+    }
+  ]
+} 

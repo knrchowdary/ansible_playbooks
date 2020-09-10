@@ -1,0 +1,89 @@
+---
+
+- name: Check if machine is bound
+  shell: "realm list | grep sssd"
+  args:
+    executable: /bin/bash
+  register: realmd_bound
+  changed_when: false
+  ignore_errors: true
+
+# removed --os-name={{ ansible_distribution }} --os-version={{ ansible_distribution_version }}
+- name: Join the domain
+  expect:
+    command: 'realm -v join --user={{ linux_active_directory_bind_dn }} --computer-ou="{{ linux_active_directory_computer }}" {{ linux_active_directory_domain }}'
+    responses:
+      Password for *: "{{ linux_active_directory_bind_pw }}"
+    timeout: 120
+  retries: 3
+  delay: 3
+  register: result
+  until: result.rc == 0
+  when: realmd_bound is failed
+  notify:
+    - restart system
+  
+#- name: Restrict access based on specific ad groups
+#  command: "realm permit -g {{ item }}@{{ linux_active_directory_domain }}"
+#  with_items: "{{ linux_active_directory_group }}"
+
+- name: change user directory
+  ini_file: 
+    path: /etc/sssd/sssd.conf
+    section: "domain/{{ linux_active_directory_domain }}"
+    option: fallback_homedir
+    value: /home/%u
+    backup: yes
+  notify: 
+    - restart sssd
+
+- name: change full_name_format
+  ini_file: 
+    path: /etc/sssd/sssd.conf
+    section: "domain/{{ linux_active_directory_domain }}"
+    option: full_name_format
+    value: "%1$s"
+    backup: yes
+  notify: 
+    - restart sssd
+
+- name: set the default domain suffix so users just enter their username
+  ini_file: 
+    path: /etc/sssd/sssd.conf
+    section: "sssd"
+    option: default_domain_suffix
+    value: "{{ linux_active_directory_domain }}"
+    backup: yes
+  notify: 
+    - restart sssd
+
+- name: Add ad group to sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: '%{{ item }}        ALL=(ALL)       ALL'
+    insertafter: '^%wheel'
+  with_items: "{{ linux_active_directory_sudo_group }}"
+  notify: 
+    - restart sssd
+
+- name: Allow ssh password authentication for specified groups
+  blockinfile: 
+    path: /etc/ssh/sshd_config
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item }}"
+    block: |
+      Match Group {{ item }}
+      PasswordAuthentication yes
+  with_items: 
+    - "{{ linux_active_directory_group }}"
+    - "{{ linux_active_directory_sudo_group }}"
+  when: linux_active_directory_ssh_allow_password_auth
+  notify:
+    - restart sshd
+
+- name: Enable kerbrosauthentication 
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#KerberosAuthentication no'
+    line: "KerberosAuthentication yes"
+  notify:
+    - restart sshd 

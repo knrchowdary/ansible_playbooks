@@ -1,0 +1,134 @@
+---
+- name: Create a user group for confluence
+  group:
+    name: "{{ confluence_group }}"
+
+- name: Create a user for confluence
+  user:
+    name: "{{ confluence_user }}"
+    group: "{{ confluence_group }}"        
+
+- name: Create directories fro confluence
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ confluence_user }}"
+    group: "{{ confluence_group }}"
+  with_items:
+   - "{{ confluence_home_path }}"
+   - "{{ confluence_data_path }}"
+   - "{{ confluence_logs_path }}"    
+
+- name: Download confluence package
+  get_url:
+    url: "{{ confluence_download_url }}"
+    dest: "{{ confluence_download_path }}"   
+    owner: "{{ confluence_user }}"
+    group: "{{ confluence_group }}"
+    force: no
+  register: confluence_pkg
+
+- name: Unarchive confluence package
+  unarchive:
+    src: "/opt/atlassian-confluence-6.15.1.tar.gz"
+    dest: "{{ confluence_home_path }}"
+    owner: "{{ confluence_user }}"
+    group: "{{ confluence_group }}"
+    remote_src: yes      
+
+- name: Giving correct permissions for confluence directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ confluence_user }}"
+    group: "{{ confluence_group }}"
+    recurse: yes
+  with_items:
+    - "{{ confluence_home_path }}"
+    - "{{ confluence_data_path }}"
+    - "{{ confluence_logs_path }}"
+
+- name: Create a service for confluence
+  import_tasks: roles/common_tasks/systemd.yml
+  vars:
+    name: confluence
+    state: stopped
+    description: Confluence
+    wanted_by: multi-user.target
+    type: forking
+    user: "{{ confluence_user }}"
+    exec_start: "/opt/atlassian/confluence/atlassian-confluence-6.15.1/bin/start-confluence.sh"
+    exec_stop: "/opt/atlassian/confluence/atlassian-confluence-6.15.1/bin/stop-confluence.sh" 
+  ignore_errors: yes             
+
+- name: Configure config properties
+  lineinfile:
+    path: "/opt/atlassian/confluence/atlassian-confluence-6.15.1/confluence/WEB-INF/classes/confluence-init.properties"
+    regexp: 'confluence\.home'
+    line: "confluence.home={{ confluence_data_path }}"
+    state: present
+  notify: confluence restart
+  
+- name: Modifying server.xml file
+  template:
+    src: server.xml.j2
+    dest: "/opt/atlassian/confluence/atlassian-confluence-6.15.1/conf/server.xml"
+    owner: "{{ confluence_user }}"
+    group: "{{ confluence_group }}"
+    mode: '0644'
+  notify: confluence restart
+  
+- name: Modify catalina config
+  template:
+    src: setenv.sh.j2
+    dest: "/opt/atlassian/confluence/atlassian-confluence-6.15.1/bin/setenv.sh"
+    owner: "{{ confluence_user }}"
+    group: "{{ confluence_group }}"
+    mode: '0644'  
+  notify: confluence restart
+  
+- name: Modify logging properties
+  template:
+    src: logging.properties.j2
+    dest: "/opt/atlassian/confluence/atlassian-confluence-6.15.1/conf/logging.properties"
+    mode: '0644'
+    owner: "{{ confluence_user }}"
+    group: "{{ confluence_group }}" 
+  notify: confluence restart  
+
+- name: Download MySQL jConnector
+  get_url:
+    url: "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-{{ confluence_java_mysql_connector_version }}.tar.gz"
+    dest: "{{ confluence_download_path }}"
+    owner: "{{ confluence_user }}"
+    group: "{{ confluence_group }}"   
+
+- name: Unarchive MySQL jConnector
+  unarchive:
+    src: "{{ confluence_download_path }}/mysql-connector-java-{{ confluence_java_mysql_connector_version }}.tar.gz"
+    dest: "{{ confluence_download_path }}"
+    remote_src: yes
+    owner: "{{ confluence_user }}"
+    group: "{{ confluence_group }}"
+    mode: 0755 
+
+- name: Copy mysql-connector-java
+  command: cp mysql-connector-java-{{ confluence_java_mysql_connector_version }}.jar /opt/atlassian/confluence/atlassian-confluence-6.15.1/confluence/WEB-INF/lib
+  args:
+    chdir: "{{ confluence_download_path }}/mysql-connector-java-{{ confluence_java_mysql_connector_version }}"
+  notify: confluence restart
+
+- name: start firewalld
+  service:
+    name: firewalld
+    enabled: yes
+    state: started
+
+- name: open port 8081 for Confluence
+  firewalld:
+    zone: public
+    port: 8081/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  notify: restart firewalld                 

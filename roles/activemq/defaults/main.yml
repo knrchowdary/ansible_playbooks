@@ -1,0 +1,127 @@
+---
+
+#Paths
+activemq_home_dir: "/opt/aces2/software"
+activemq_home_root: "{{ activemq_home_dir }}/apache-activemq-{{ activemq_version }}"
+activemq_version: "5.4.2"
+activemq_install_filename: "apache-activemq-{{ activemq_version }}-bin.tar.gz"
+activemq_user: activemq
+activemq_group: activemq
+#activemq_download_url: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}}/apache-activemq-5.4.2.zip"
+activemq_download_username: ""
+activemq_download_password: ""
+activemq_download_url: "http://archive.apache.org/dist/activemq/apache-activemq/{{ activemq_version }}/apache-activemq-{{ activemq_version }}-bin.tar.gz"
+
+#brokers
+
+brokers:
+  - brokername: anzBroker
+    brokerqueue1: AnzPlanningQueue
+    brokerqueue2: OpsQueueMC
+    brokerqueue3: OpsQueueEA
+    brokerqueue4: OpsQueueNA
+    brokerqueue5: OpsQueueANZ
+    physicalname1: AcesJMSModule!PlanningQueue
+    physicalname2: AcesJMSModule!OpsQueueMC
+    physicalname3: AcesJMSModule!OpsQueueEA
+    physicalname4: AcesJMSModule!OpsQueueNA
+    physicalname5: AcesJMSModule!OpsQueueANZ
+    connectorport: 1106
+    beansplanningxml: anzPlanningBeans.xml
+    beansopsxml: anzOpsBeans.xml
+    beansdaoxml: anzDaoBeans.xml
+  - brokername: azulBroker
+    brokerqueue1: AzulPlanningQueue
+    brokerqueue2: ADOpsQueue
+    physicalname1: AcesJMSModule!PlanningQueue
+    physicalname2: activemq:ADOpsQueue
+    connectorport: 1104
+    beansplanningxml: azulPlanningBeans.xml
+    beansopsxml: azulOpsBeans.xml
+    beansdaoxml: azulDaoBeans.xml
+
+#activemq_directories
+activemq_opts_memory: '-Xms1G -Xmx1G'
+activemq_conf_dir: "{{ activemq_home_root }}/conf"
+activemq_data_dir: "{{ activemq_home_root }}/data"
+activemq_tmp_dir: "{{ activemq_home_root }}/tmp"
+
+activemq_instance_name: "activemq"
+activemq_admin_user: "admin"
+activemq_admin_password: "admin"
+activemq_admin_group: "admins"
+activemq_user_groups: "users"
+activemq_guest_groups: guests
+activemq_queue_1: ">"
+activemq_queue_2: "2eQueue"
+activemq_queue_3: "2eQueueVX"
+activemq_topic: "ActiveMQ.Advisory.>"
+activemq_connector_port: 1100
+activemq_queue_1: "2eQueue"
+activemq_queue_2: "B6SabreQueue"
+activemq_queue_3: "9ESabreQueue"
+activemq_queue_4: "VXSabreQueue"
+activemq_queue_5: "QKSabreQueue"
+activemq_queue_6: "PDSabreQueue"
+activemq_queue_7: "crewtracQueuePD"
+activemq_queue_8: "YVSabreQueue"
+activemq_queue_9: "crewtracQueueYV"
+activemq_queue_10: "wmq.In.Queue"
+activemq_queue_11: "wmq.Out.Queue"
+activemq_queue_12: "LogQueue"
+activemq_queue_13: "eventQueue"
+activemq_queue_14: "HAPilotSabreQueue"
+activemq_queue_15: "HACabinSabreQueue"
+activemq_queue_16: "EVCSabreQueue"
+activemq_queue_17: "EVESabreQueue"
+activemq_queue_18: "ADOpsQueue"
+activemq_queue_19: "2eQueueVX"
+activemq_queue_20: "crewtracQueueB6"
+activemq_queue_21: "crewtracQueue9E"
+activemq_queue_22: "crewtracQueueVX"
+activemq_queue_23: "crewtracQueueEVC"
+activemq_queue_24: "crewtracQueueEVE"
+activemq_queue_25: "crewtracQueueHA"
+activemq_queue_26: "crewtracQueueQK"
+activemq_queue_27: "HopOpsQueueYS"
+activemq_queue_28: "HopOpsQueueDB"
+activemq_queue_29: "HopOpsQueueAN"
+activemq_queue_30: "CrewCareSMSQueue"
+activemq_queue_31: "TSOpsQueue"
+activemq_queue_32: "F9SabreQueue"
+activemq_queue_33: "crewtracQueueF9"
+activemq_queue_physical_name1: "2eQueue"
+activemq_queue_physical_name2: "B6SabreQueue"
+activemq_queue_physical_name3: "9ESabreQueue"
+activemq_queue_physical_name4: "VXSabreQueue"
+activemq_queue_physical_name5: "QKSabreQueue"
+activemq_queue_physical_name6: "PDSabreQueue"
+activemq_queue_physical_name7: "crewtracQueuePD"
+activemq_queue_physical_name8: "YVSabreQueue"
+activemq_queue_physical_name9: "crewtracQueueYV"
+activemq_queue_physical_name10: "wmq.In.Queue"
+activemq_queue_physical_name11: "wmq.Out.Queue"
+activemq_queue_physical_name12: "LogQueue"
+activemq_queue_physical_name13: "eventQueue"
+activemq_queue_physical_name14: "HAPilotSabreQueue"
+activemq_queue_physical_name15: "HACabinSabreQueue"
+activemq_queue_physical_name16: "EVCSabreQueue"
+activemq_queue_physical_name17: "EVESabreQueue"
+activemq_queue_physical_name18: "ADOpsQueue"
+activemq_queue_physical_name19: "2eQueueVX"
+activemq_queue_physical_name20: "crewtracQueueB6"
+activemq_queue_physical_name21: "crewtracQueue9E"
+activemq_queue_physical_name22: "crewtracQueueVX"
+activemq_queue_physical_name23: "crewtracQueueEVC"
+activemq_queue_physical_name24: "crewtracQueueEVE" 
+activemq_queue_physical_name25: "crewtracQueueHA"
+activemq_queue_physical_name26: "crewtracQueueQK"
+activemq_queue_physical_name27: "HopOpsQueueYS"
+activemq_queue_physical_name28: "HopOpsQueueDB"
+activemq_queue_physical_name29: "HopOpsQueueAN"
+activemq_queue_physical_name30: "CrewCareSMSQueue"
+activemq_queue_physical_name31: "TSOpsQueue"
+activemq_queue_physical_name32: "F9SabreQueue"
+activemq_queue_physical_name33: "crewtracQueueF9"
+activemq_openwire_transport_connector_uri: "tcp://0.0.0.0:61616"
+

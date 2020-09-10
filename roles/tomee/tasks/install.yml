@@ -1,0 +1,24 @@
+---
+- name: ensure destination directory is created
+  file:
+    path: "{{tomee_dir}}"
+    state: directory
+
+- name: download tomee
+  get_url: 
+    dest: "{{ tomee_dir }}/tomee.zip"
+    url: "{{ tomee_url }}"
+    url_username: "{{ tomee_url_username }}"
+    url_password: "{{ tomee_url_password }}"
+  register: tomee_task_download
+  until: tomee_task_download is succeeded
+  become: yes
+  when: tomee_version_installed is not defined or oracle_java_version_installed != oracle_java_version_string
+
+
+- name: extract the zip
+  unarchive:
+    src: "{{ tomee_dir }}/tomee.zip"
+    dest: "{{ tomee_dir }}"
+    remote_src: yes
+  register: tomee_temp_extract

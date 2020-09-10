@@ -1,0 +1,9 @@
+---
+jasper_version: "6.4.3"
+jasper_package: "jasperserver-{{ jasper_version }}.zip"
+jasper_sources_url: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/{{ jasper_package }}"
+jasper_download_dir: /tmp
+jasper_installation_path: "/opt/aces2/software"
+jasper_home_dir: "{{ jasper_installation_path }}/{{ jasper_package.split('.zip')[0] }}"
+jasper_user: aces2dev
+jasper_group: aces2dev

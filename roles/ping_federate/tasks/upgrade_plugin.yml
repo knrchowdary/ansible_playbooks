@@ -1,0 +1,32 @@
+---
+    
+- name: check the adapters exists or not
+  stat:
+    path: "{{ ping_federate_deploy_dir }}/{{ item }}"
+  with_items: "{{ adapters }}"
+  register: status
+
+- name: removing the old file
+  file:
+    path: "{{ ping_federate_deploy_dir }}/{{ item.item }}"
+    state: absent
+  register: remove_old_files
+  when: item.stat.exists 
+  with_items:
+      - "{{ status.results }}"
+   
+- name: download ping federate adapter
+  get_url: 
+    dest: "{{ ping_federate_deploy_dir }}"
+    url: "{{ item.value }}"
+    url_username: "{{ ping_federate_url_username }}"
+    url_password: "{{ ping_federate_url_password }}"
+    mode: '0644'
+    owner: "{{ ping_federate_user }}"
+    group: "{{ ping_federate_group }}"
+  with_dict: "{{ ping_federate_adapters }}" 
+  register: ping_federation_adapters_download
+  until: ping_federation_adapters_download is succeeded
+  become: yes
+  notify:
+    - restart ping federate

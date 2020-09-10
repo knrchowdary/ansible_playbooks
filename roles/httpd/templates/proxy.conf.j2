@@ -1,0 +1,30 @@
+#jinja2: trim_blocks:False
+
+{% for key, value in apache_proxy.extra.items() %}
+{{ key }} {{ value }}
+{% endfor %}
+
+## Proxy tag
+<Proxy *>
+
+	{{ apache_proxy.proxy }}
+
+</Proxy>
+
+## Turn SSL Proxy Engine on
+SSLProxyEngine on
+
+## Proxypass
+{% for key, value in apache_proxy.proxypass.items() %}
+ProxyPass {{ key }} {{ value }}
+{% endfor %}
+
+## ProxyPassMatch
+{% for key, value in apache_proxy.proxypassmatch.items() %}
+ProxyPassMatch {{ key }} {{ value }}
+{% endfor %}
+
+## proxypass_reverse
+{% for key, value in apache_proxy.proxypass_reverse.items() %}
+ProxyPassReverse {{ key }} {{ value }}
+{% endfor %}

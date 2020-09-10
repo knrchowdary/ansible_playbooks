@@ -1,0 +1,20 @@
+---
+apache_timeout: 3600
+
+apache_proxy_override:
+  proxypass:
+    "^/$": http://{{server_to_proxy[group_names[0]]}}/ACES
+    "/ACESSUPPLIER": http://{{server_to_proxy[group_names[0]]}}/ACESSUPPLIER
+    "/assets": http://{{server_to_proxy[group_names[0]]}}/assets
+    "/ACESAUTH": http://{{server_to_proxy[group_names[0]]}}/ACESAUTH/
+    "/ACES": http://{{server_to_proxy[group_names[0]]}}/ACES
+    "/ACESCLIENT": http://{{server_to_proxy[group_names[0]]}}/ACESCLIENT
+  proxypass_reverse:
+    "^/$": http://{{server_to_proxy[group_names[0]]}}/ACES
+    "/ACESSUPPLIER": http://{{server_to_proxy[group_names[0]]}}/ACESSUPPLIER
+    "/assets": http://{{server_to_proxy[group_names[0]]}}/assets
+    "/ACESAUTH": http://{{server_to_proxy[group_names[0]]}}/ACESAUTH/
+    "/ACES": http://{{server_to_proxy[group_names[0]]}}/ACES
+    "/ACESCLIENT": http://{{server_to_proxy[group_names[0]]}}/ACESCLIENT
+
+apache_proxy_noindex_url: https://{{external_dns_name[group_names[0]]}}.{{server_domain_name}}/ACESSUPPLIER

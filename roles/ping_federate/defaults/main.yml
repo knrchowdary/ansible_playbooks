@@ -1,0 +1,37 @@
+---
+# defaults file for ping_federate
+
+#enable firewallD
+firewallD: 
+  enable: True
+
+ping_federate_url: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/pingfederate-9.3.3.zip"
+ping_federate_url_username: ""
+ping_federate_url_password: ""
+ping_federate_dir: "/opt/pingfederate"
+ping_federate_deploy_dir: "{{ ping_federate_dir }}/server/default/deploy"
+
+ping_federate_required_java_version: 1.8
+ping_federate_user: pingfederate
+ping_federate_group: pingfederate
+ping_federate_version: 9.3.3
+ping_federate_java_home: /usr/java/default
+
+ping_federate_plugin:
+  pf_agentless: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/pf-agentless-integration-kit-1.5.1.zip"
+  mq_role_adapter: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/pf-agentless-integration-kit-1.5.1.zip"
+ping_federate_adapters:
+  envoy_role: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/aa-roles-pf-adapter-1.0.0.jar"
+  pf_referenceid_adapter: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/pingfederate/pf-referenceid-adapter-1.5.1.jar"
+  jackson-annotations: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/jackson-annotations-2.7.8.jar"
+  jackson-core: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/jackson-core-2.7.8.jar"
+  jackson-databind: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/jackson-databind-2.7.8.jar"
+  commons-httpclient: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/commons-httpclient.jar"
+
+ping_federate_import_dest: /opt/pingfederate/server/default/data/drop-in-deployer/data.zip
+ping_federate_config_url: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/{{ping_federate_config_filename}}"
+ping_federate_config_filename: UAT-pingfederate-data-01-13-2020.zip
+
+adapters:
+    - pf-referenceid-adapter-1.5.1.jar
+    - aa-roles-pf-adapter-1.0.0.jar

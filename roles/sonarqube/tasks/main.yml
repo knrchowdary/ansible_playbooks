@@ -1,0 +1,81 @@
+---
+- name: Create a user group for sonarqube
+  group: 
+    name: "{{ sonarqube_group }}"
+
+- name: Create a user for sonarqube
+  user: 
+    name: "{{ sonarqube_user }}"
+    group: "{{ sonarqube_group }}"    
+
+- name: Create a directory for sonarqube
+  file: 
+    dest: "{{ sonarqube_install_base_dir }}"
+    state: directory
+    owner: "{{ sonarqube_user }}"
+    group: "{{ sonarqube_group }}"   
+
+- name: Download sonarqube
+  unarchive:
+    src: "{{ sonarqube_download_url }}"
+    dest: "{{ sonarqube_download_base_dir }}"
+    remote_src: yes
+    creates: "{{ sonarqube_service_file_path }}"         
+
+- name: Install sonarqube
+  shell: "mv {{ sonarqube_install_tmp_dir }}/* {{ sonarqube_install_base_dir }}/"
+  args:
+    creates: "{{ sonarqube_service_file_path }}"
+    removes: "{{ sonarqube_install_tmp_dir }}"
+    
+- name: Change file permission of SonarQube installation directory
+  file:
+    dest: "{{ sonarqube_install_base_dir }}"
+    owner: "{{ sonarqube_user }}"
+    group: "{{ sonarqube_group }}"
+    recurse: yes    
+
+- name: Change values for /etc/sysctl.conf
+  template:
+    src: sysctl.conf.j2
+    dest: /etc/sysctl.conf
+    mode: '0644'    
+
+- name: Run sysctl max map count
+  become: yes
+  command: sysctl -w vm.max_map_count=262144
+  register: sysctl
+
+- name: Create systemd service for sonarqube
+  import_tasks: roles/common_tasks/systemd.yml
+  vars:
+    name: sonarqube
+    state: stopped
+    description: SonarQube
+    wanted_by: multi-user.target
+    type: forking
+    user: "{{ sonarqube_user }}"
+    exec_start: "{{ sonarqube_service_file_path }} start"
+    exec_stop: "{{ sonarqube_service_file_path }} stop"
+    exec_reload: "{{ sonarqube_service_file_path }} restart"
+    pid_file: "{{ sonarqube_install_base_dir }}/bin/linux-x86-64/SonarQube.pid"
+    limit_no_file: "65536"
+    limit_nproc: "4096"  
+
+- name: Ensure SonarQube started and enabled
+  systemd:
+    name: sonarqube
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  when: sysctl.changed  
+
+- name: Configure sonarqube properties
+  lineinfile: 
+    dest: "{{ sonarqube_install_base_dir }}/conf/sonar.properties"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items: "{{ sonarqube_config_vars }}"
+  notify: restart sonarqube
+
+- include: post_tasks.yml        

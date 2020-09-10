@@ -1,0 +1,13 @@
+---
+
+- name: ensure file permission to jenkins user and group
+  file:
+    dest: "{{ jenkins_deploy_dir }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    recurse: yes
+
+- name: make sure jenkins service is up and running
+  service: 
+    name: jenkins
+    state: started

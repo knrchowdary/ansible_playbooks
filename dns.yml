@@ -1,0 +1,9 @@
+---
+# This playbook deploys a updates the dns settings for the specified server_groups.
+
+- hosts: "{{server_groups}}"
+  #remote_user: root
+  become: yes
+  become_method: sudo
+  roles:
+    - dns

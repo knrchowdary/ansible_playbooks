@@ -1,0 +1,67 @@
+- name: change authentication provider
+  shell: "authconfig --enablekrb5 --krb5kdc={{ linux_active_directory_domain }} --krb5adminserver={{ linux_active_directory_domain }} --krb5realm={{ linux_active_directory_realm }} --enablesssd --enablesssdauth  --enablemkhomedir --update"
+  become: yes
+  become_user: root
+  register: auth_config
+
+- name: Join Domain
+  shell: "echo -n '{{ linux_active_directory_bind_pw }}' | adcli join --stdin-password --domain-ou='{{ linux_active_directory_computer }}' --login-user={{ linux_active_directory_bind_dn }} -D {{ linux_active_directory_domain }}"
+  args:
+    creates: /etc/krb5.keytab
+  become: yes
+  become_user: root
+  register: join_domain
+
+- name: configure sssd.conf file
+  template:
+    src: sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    owner: root
+    group: root
+    mode: 0600
+    backup: yes
+  become: yes
+
+- name: Insert a line to generate home directory if not
+  lineinfile:
+    path: /etc/pam.d/system-auth
+    line: session     optional      pam_mkhomedir.so skel=/etc/skel umask=077
+  become: yes
+
+- name: start sssd service
+  service:
+    name: sssd
+    state: started
+  become: yes
+  become_user: root
+
+- name: Add ad group to sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: '%{{ item }}        ALL=(ALL)       ALL'
+    insertafter: '^%wheel'
+  with_items: "{{ linux_active_directory_sudo_group }}"
+  notify: 
+    - restart sssd
+
+- name: Allow ssh password authentication for specified groups
+  blockinfile: 
+    path: /etc/ssh/sshd_config
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item }}"
+    block: |
+      Match Group {{ item }}
+      PasswordAuthentication yes
+  with_items: 
+    - "{{ linux_active_directory_group }}"
+    - "{{ linux_active_directory_sudo_group }}"
+  when: linux_active_directory_ssh_allow_password_auth
+  notify:
+    - restart sshd
+
+- name: Enable kerbrosauthentication 
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#KerberosAuthentication no'
+    line: "KerberosAuthentication yes"
+  notify:
+    - restart sshd 

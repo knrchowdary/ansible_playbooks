@@ -1,0 +1,9 @@
+---
+
+## httpd
+apache_ssl: {}
+apache_server_token: "OS"
+apache_timeout: 60
+
+apache_extra_config_single_value_override: 
+  ServerSignature: "On"

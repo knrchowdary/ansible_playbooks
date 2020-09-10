@@ -1,0 +1,17 @@
+---
+# handlers file for linux_active_directory
+
+- name: restart sssd
+  service:
+    name: sssd
+    state: restarted
+
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted
+
+- name: restart system
+  reboot:
+    reboot_timeout: 3600
+  when: linux_active_directory_restart_on_domain_join

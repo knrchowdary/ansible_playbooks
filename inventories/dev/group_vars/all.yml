@@ -1,0 +1,45 @@
+---
+
+## Genric variable
+env: dev
+firewallD: 
+  enable: false
+
+
+## ACES DATASOURCE Passwords
+aces2_server_db_password: ""
+aces2_aces3bridge_db_password: ""
+aces2_aceslatam_server_db_password: ""
+## Aces Datasource informaton
+weblogic_jdbc_params: 
+  - path: ""
+    url: ""
+    username: ""
+    password: ""
+  - path: ""
+    url: ""
+    username: ""
+    password: ""
+## base
+base_default_ethernet: eth0
+
+## dns role
+dns_search: ""
+dns_nameserver:
+
+server_domain_name: ""
+ad_domain_name: ""
+
+# sumo collector keys
+sumo_accesskey: ""
+sumo_accessid: ""
+
+## linux_ad role
+linux_active_directory_domain: ""
+linux_active_directory_bind_dn: ""
+linux_active_directory_computer: ""
+linux_active_directory_group: 
+  - Linux-NonProd-Standard
+linux_active_directory_sudo_group: 
+  - Linux-NonProd-Sudo
+linux_active_directory_bind_pw:  

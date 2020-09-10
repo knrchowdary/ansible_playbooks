@@ -1,0 +1,29 @@
+---
+
+- name: start firewalld
+  service:
+    name: firewalld
+    enabled: yes
+    state: started
+
+- name: open port 9999 for PingFederate
+  firewalld:
+    zone: public
+    port: 9999/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: firewallD.enable
+  notify: 
+    - restart firewalld
+
+- name: open port 9031 for PingFederate
+  firewalld:
+    zone: public
+    port: 9031/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: firewallD.enable
+  notify: 
+    - restart firewalld

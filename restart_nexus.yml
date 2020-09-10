@@ -1,0 +1,10 @@
+---
+# This playbook restarts nexus
+
+
+- hosts: "{{ host_name | default('tag_Name_*_nexus*') }}"
+  roles:
+     - { role: restart_nexus }
+  become: yes
+  become_method: sudo
+  remote_user: ec2-user

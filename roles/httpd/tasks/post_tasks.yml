@@ -1,0 +1,19 @@
+---
+
+- name: 
+  firewalld:
+    zone: public
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  loop: 
+  - http
+  - https
+  when: firewallD.enable
+
+- name: enable and start apache
+  service:
+    name: "{{ apache_service }}"
+    enabled: yes
+    state: started

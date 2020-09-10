@@ -1,0 +1,9 @@
+---
+# This playbook deploys PingFederate server to specified host on AWS.
+
+- hosts: "{{ host_name | default('tag_Name_*_sso*') }}"
+  roles:
+     - { role: ping_federate }
+  become: yes
+  become_method: sudo
+  remote_user: ansible

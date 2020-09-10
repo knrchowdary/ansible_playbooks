@@ -1,0 +1,9 @@
+{{ confluence_logs_path }}/*.log {
+  daily
+  rotate 7
+  copytruncate
+  delaycompress
+  notifempty
+  missingok
+  su {{ confluence_user }} {{ confluence_group }}
+}

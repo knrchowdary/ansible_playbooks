@@ -1,0 +1,7 @@
+- name: start servers
+  include: start_servers.yml
+  tags: start
+
+- name: stop servers
+  include: stop_servers.yml
+  tags: stop

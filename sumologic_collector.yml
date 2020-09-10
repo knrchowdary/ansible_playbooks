@@ -1,0 +1,11 @@
+---
+# This playbook deploys sumologic collectors to specified server_groups in a specific environment.
+
+- hosts: "{{host_server_groups}}"
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  vars_files:
+    - "inventories/{{ env }}/group_vars/all.yml"
+  roles:
+    - sumologic_collector

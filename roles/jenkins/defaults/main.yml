@@ -1,0 +1,21 @@
+---
+# defaults file for jenkins
+
+#enable firewallD
+firewallD: 
+  enable: True
+
+jenkins_url: http://pkg.jenkins-ci.org/redhat/jenkins.repo
+jenkins_key: rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+jenkins_url_username: ""
+jenkins_url_password: ""
+admin_user_pass: "$howMeJenk!ns"
+jenkins_repo_dir: "/etc/yum.repos.d"
+jenkins_deploy_dir: "{{ jenkins_repo_dir }}/server/default/deploy"
+
+jenkins_required_java_version: 1.8
+jenkins_user: jenkins_usr
+jenkins_group: jenkins_grp
+jenkins_java_home: /usr/java/default
+
+

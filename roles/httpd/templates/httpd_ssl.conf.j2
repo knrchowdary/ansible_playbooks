@@ -1,0 +1,132 @@
+###jinja2: trim_blocks:False
+
+{% if apache_ssl.Listen is defined %}
+Listen {{ apache_ssl.Listen }}
+{% endif %}
+
+{% if apache_ssl.SSLPassPhraseDialog is defined %}
+SSLPassPhraseDialog {{ apache_ssl.SSLPassPhraseDialog }}
+{% endif %}
+
+{% if apache_ssl.SSLSessionCache is defined %}
+SSLSessionCache {{ apache_ssl.SSLSessionCache }}
+{% endif %}
+
+{% if apache_ssl.SSLSessionCacheTimeout is defined %}
+SSLSessionCacheTimeout {{ apache_ssl.SSLSessionCacheTimeout }}
+{% endif %}
+
+{% if apache_ssl.SSLRandomSeed is defined %}
+{% for key, value in apache_ssl.SSLRandomSeed.iteritems() %}
+SSLRandomSeed {{ key }} {{ value }}
+{% endfor %}
+{% endif %}
+
+{% if apache_ssl.SSLCryptoDevice is defined %}
+SSLCryptoDevice {{ apache_ssl.SSLCryptoDevice }}
+{% endif %}
+
+{% if apache_ssl.virtual_hosts is defined %}
+{% for key, value in apache_ssl.virtual_hosts.iteritems() %}
+<VirtualHost {{key}}>
+    SSLEngine on
+
+    {% if value.Header is defined -%}
+    Header {{ value.Header }}
+    {% endif %}
+
+    {% if value.ErrorLog is defined -%}
+    ErrorLog {{ value.ErrorLog }}
+    {% endif %}
+
+    {%- if value.TransferLog is defined %}
+    TransferLog {{ value.TransferLog }}
+    {% endif %}
+
+    {%- if value.LogLevel is defined %}
+    LogLevel {{ value.LogLevel }}
+    {% endif %}
+
+    {%- if value.SSLProtocol is defined %}
+    SSLProtocol {{ value.SSLProtocol }}
+    {% endif %}
+
+    {%- if value.SSLCipherSuite is defined %}
+    SSLCipherSuite {{ value.SSLCipherSuite }}
+    {% endif %}
+
+    {%- if value.SSLCertificateFile is defined %}
+    SSLCertificateFile {{ value.SSLCertificateFile }}
+    {% endif %}
+
+    {%- if value.SSLCertificateKeyFile is defined %}
+    SSLCertificateKeyFile {{ value.SSLCertificateKeyFile }}
+    {% endif %}
+
+    {%- if value.SSLCertificateChainFile is defined %}
+    SSLCertificateChainFile {{ value.SSLCertificateChainFile }}
+    {% endif %}
+
+    {%- if value.SSLCACertificateFile is defined %}
+    SSLCACertificateFile {{ value.SSLCACertificateFile }}
+    {% endif %}
+
+
+    {%- if value.SSLCompression is defined %}
+    SSLCompression {{ value.SSLCompression }}
+    {% endif %}
+
+    {%- if value.SSLSessionTickets is defined %}
+    SSLSessionTickets {{ value.SSLSessionTickets }}
+    {% endif %}
+
+    {%- if value.SSLHonorCipherOrder is defined %}
+    SSLHonorCipherOrder {{ value.SSLHonorCipherOrder }}
+    {% endif %}
+
+    {%- if value.CustomLog is defined %}
+    {%- for k, v in value.CustomLog.iteritems() %}
+    CustomLog {{ k }} {{ v }}
+    {% endfor %}
+    {% endif %}
+
+    {%- if value.SetEnvIf is defined %}
+    {%- for k, v in value.SetEnvIf.iteritems() %}
+    SetEnvIf {{ k }} {{ v }}
+    {% endfor %}
+    {% endif %}
+
+    {%- if value.BrowserMatch is defined %}
+    {%- for k, v in value.BrowserMatch.iteritems() %}
+    BrowserMatch "{{ k }}" {{ v }}
+    {% endfor %}
+    {% endif %}
+
+    {%- if value.extra is defined %}
+    {{ value.extra }}
+    {% endif %}
+
+    {%- if value.files is defined %}
+    {%- for k, v in value.files.iteritems() %}
+    <Files {{ k }}>
+        {% for k1, v1 in v.iteritems() %}
+        {{k1}} {{v1}}
+        {% endfor %}
+    </Files>
+    {% endfor %}
+    {% endif %}
+
+    {%- if value.directory is defined %}
+    {%- for k, v in value.directory.iteritems() %}
+    <Directory "{{ k }}">
+        {% for k1, v1 in v.iteritems() %}
+        {{k1}} {{v1}}
+        {% endfor %}
+    </Directory>
+    {% endfor %}
+    {% endif %}
+
+</VirtualHost>
+{% endfor %}
+{% endif %}
+

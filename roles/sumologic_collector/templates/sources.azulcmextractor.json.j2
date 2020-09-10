@@ -1,0 +1,30 @@
+{
+  "api.version":"v1",
+  "sources":[
+    {
+       "sourceType" : "SystemStats",
+       "name" : "Host_Metrics",
+       "interval" : 60000,
+       "metrics" : ["CPU_User", "CPU_Sys", "CPU_Idle", "CPU_IOWait", "CPU_LoadAvg_5min", "Disk_UsedPercent", "Mem_Used","Mem_Free"]
+     },
+    {
+        "name": "{{server_type | upper}} Azul CM Extractor Log",
+        "description": "{{server_type | upper}} Azul CM Extractor Log",
+        "category": "{{env | upper}}/{{server_type | upper}}/Java/AzulCMExtractor",
+        "pathExpression": "/home/{{sumo_username[server_type][env]}}/azul-planning-ops-cm-extractor/logs/azul-planning-ops-cm-extractor.log",
+        "sourceType": "LocalFile",
+        "automaticDateParsing": true,
+        "multilineProcessingEnabled": true,
+        "useAutolineMatching": true,
+        "contentType": "Other",
+        "forceTimeZone": false,
+        "timeZone": "America/New_York",
+        "filters": [],
+        "cutoffTimestamp": 1550552400000,
+        "encoding": "UTF-8",
+        "blacklist": []
+    },
+    
+
+  ]
+}

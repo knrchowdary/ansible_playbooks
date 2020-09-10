@@ -1,0 +1,10 @@
+galaxy_info:
+  author: Amit Sharma
+  description: Restart Nexus
+  company: Accommodations Plus International
+
+  min_ansible_version: 2.4
+
+  galaxy_tags: []
+
+dependencies: []

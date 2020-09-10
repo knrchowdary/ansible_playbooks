@@ -1,0 +1,98 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:amq="http://activemq.apache.org/schema/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:{{ item.brokername }}.properties</value>
+				<value>classpath:server.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="properties"
+		class="org.apache.camel.component.properties.PropertiesComponent">
+		<property name="location">
+			<value>classpath:{{ item.brokername }}.properties,server.properties</value>
+		</property>
+	</bean>
+
+	<bean id="shutdown" class="org.apache.camel.impl.DefaultShutdownStrategy">
+		<property name="timeout" value="20" />
+	</bean>
+
+	<broker brokerName="{{ item.brokername }}" xmlns="http://activemq.apache.org/schema/core"
+		dataDirectory="${activemq.base}/data" persistent="true">
+
+		<!-- These are the queues that are created upon startup -->
+		<destinations>
+			<queue name="{{ item.brokerqueue1 }}" physicalName="{{ item.physicalname1 }}" />
+			<queue name="{{ item.brokerqueue2 }}" physicalName="{{ item.physicalname2 }}" />
+		</destinations>
+
+		<!-- Enable JMX connections -->
+		<managementContext>
+			<managementContext createConnector="true"
+				connectorPort="{{ item.connectorport }}" />
+		</managementContext>
+
+		<!-- Enable shutdown hook for Camel -->
+		<shutdownHooks>
+			<bean xmlns="http://www.springframework.org/schema/beans" id="hook"
+				class="com.aces.activemq.ShutdownHook">
+				<property name="camelContext" ref="camel" />
+			</bean>
+		</shutdownHooks>
+
+		<!-- Set some limits on system resources -->
+		<systemUsage>
+			<systemUsage>
+				<memoryUsage>
+					<memoryUsage limit="50 mb" />
+				</memoryUsage>
+				<storeUsage>
+					<storeUsage limit="2 gb" />
+				</storeUsage>
+				<tempUsage>
+					<tempUsage limit="300 mb" />
+				</tempUsage>
+			</systemUsage>
+		</systemUsage>
+
+		<!-- Define our internal (vm) and external (ssl) connections -->
+		<transportConnectors>
+			<transportConnector name="local"
+				uri="tcp://${activemq.host}:${activemq.tcp.port}" />
+		</transportConnectors>
+
+	</broker>
+	<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+		<properties>
+			<property key="CamelLogDebugBodyMaxChars" value="50000000" />
+		</properties>
+		<!-- Process planning file for each bid period -->
+		<routeContextRef ref="azulPlanningRoutes" />
+		<routeContextRef ref="azulOpsRoutes" />
+	</camelContext>
+
+	<!-- Singleton application context -->
+	<bean class="com.aces.spring.ServiceFinder" />
+	
+	<!-- Filter to handle incomplete file in routing process-->
+    <bean id="lastModifiedFileFilter" class="com.aces.activemq.azul.LastModifiedTimeFileFilter">
+        <property name="includes" value="*.zip"/>
+        <property name="noOfSeconds" value="60"/>
+    </bean>
+   
+	<import resource="{{ item.beansplanningxml }}" />
+	<import resource="{{ item.beansopsxml }}" />
+	<import resource="{{ item.beansdaoxml }}" />
+
+	<!-- broker console config goes here -->
+	<import resource="azulBrokerConsole/jetty.xml" />
+
+</beans>
+

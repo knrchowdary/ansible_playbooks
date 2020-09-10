@@ -1,0 +1,52 @@
+---
+
+- name: copy module files
+  copy: 
+    src: "{{ item }}"
+    dest: "{{apache_modules_dir}}"
+    mode: 0755
+    setype: "{{ module.value.setype }}"
+  with_fileglob:
+    - "{{ module.value.file }}"
+  when: 
+    - module.value.file is defined and module.value.file[-1] == '*'
+    - ansible_selinux.status == "enabled"
+
+- name: copy module
+  copy: 
+    src: "{{ module.value.file }}"
+    dest: "{{apache_modules_dir}}"
+    mode: 0755
+    setype: "{{ module.value.setype }}"
+  when: 
+    - module.value.file is defined and module.value.file[-1] != '*'
+    - ansible_selinux.status == "enabled"
+
+- name: copy module files
+  copy: 
+    src: "{{ item }}"
+    dest: "{{apache_modules_dir}}"
+    mode: 0755
+  with_fileglob:
+    - "{{ module.value.file }}"
+  when: 
+    - module.value.file is defined and module.value.file[-1] == '*'
+    - ansible_selinux.status != "enabled"
+
+- name: copy module
+  copy: 
+    src: "{{ module.value.file }}"
+    dest: "{{apache_modules_dir}}"
+    mode: 0755
+  when: 
+    - module.value.file is defined and module.value.file[-1] != '*'
+    - ansible_selinux.status != "enabled"
+
+- name: add module entry in conf
+  lineinfile:
+    regexp: "^LoadModule {{ module.key }} {{ module.value.library }}"
+    line: "LoadModule {{ module.key }} {{ module.value.library }}"
+    state: present
+    dest: "{{ apache_server_root }}/conf.modules.d/00-base.conf"
+  when:
+    - module.value.library is defined

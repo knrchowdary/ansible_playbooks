@@ -1,0 +1,37 @@
+---
+
+# Paths
+weblogic_dir: "/opt/software"
+weblogic_mw_home: "{{ weblogic_dir }}/Oracle"
+weblogic_wl_home: "{{ weblogic_mw_home }}/wlserver"
+weblogic_user: weblogic
+weblogic_group: weblogic
+
+weblogic_download_url: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/Weblogic_12C_R1.zip"
+weblogic_download_username: ""
+weblogic_download_password: ""
+weblogic_download_filename: "Weblogic_12C_R1.zip"
+
+weblogic_domain_download_url: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/aces3Domain.jar"
+weblogic_domain_download_username: ""
+weblogic_domain_download_password: ""
+weblogic_domain_root: "{{ weblogic_mw_home }}/user_projects/domains"
+weblogic_domain_name: aces3Domain
+weblogic_domain_home: "{{ weblogic_domain_root }}/{{ weblogic_domain_name }}"
+weblogic_domain_username: weblogic
+weblogic_domain_password: "weblogic12213"
+
+weblogic_adminserver_name: "myserver"
+weblogic_node_listen_address: "{{ ansible_facts[base_default_ethernet]['ipv4']['address'] }}"
+weblogic_node_listen_port: 7001
+weblogic_node_listen_ssl_port: 7002
+weblogic_admin_listen_port: 9000
+
+weblogic_java_home: /usr/java/default
+
+weblogic_jdbc_params: []
+  #- path: "/JDBCSystemResource/ACESII-DATASOURCE/JdbcResource/ACESII-DATASOURCE/JDBCDriverParams/NO_NAME_0"
+  #  url: "jdbc:oracle:thin:@database:1521:xe"
+  #  username: "acesii"
+  #  password: "password"
+

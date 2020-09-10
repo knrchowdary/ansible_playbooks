@@ -1,0 +1,23 @@
+# Default file for tomcat
+
+tomcat8_java_home: /usr/java/default
+tomcat8_catalina_home: "{{ tomcat8_install_path }}"
+tomcat8_archive_name: "apache-tomcat-8.5.34"
+tomcat8_group: "tomcat8"
+tomcat8_user: "tomcat8"
+tomcat8_home_dir: "/opt"
+tomcat8_install_path: "{{ tomcat8_home_dir }}/{{ tomcat8_archive_name }}"
+tomcat8_version: "8.5.34"
+tomcat8_name: "apache-tomcat-{{ tomcat8_version }}"
+tomcat8_url: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/{{tomcat8_name}}.zip"
+tomcat8_url_username: ""
+tomcat8_url_password: ""
+tomcat8_port: "8080"
+tomcat_roles:
+  - manager-gui
+  - manager-script
+  - manager-jmx
+  - manager-status
+tomcat_users:
+  - name: tomcat8
+    password: changeme

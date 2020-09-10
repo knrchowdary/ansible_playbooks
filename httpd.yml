@@ -1,0 +1,10 @@
+---
+# This playbook deploys a secured httpd to specified server_groups in a specific environment.
+
+- hosts: "{{host_name}}"
+  roles:
+    - role: base
+    - role: httpd
+  become: yes
+  become_method: sudo
+  remote_user: ansible

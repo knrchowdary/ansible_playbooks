@@ -1,0 +1,16 @@
+- name: start firewalld
+  service:
+    name: firewalld
+    enabled: yes
+    state: started
+
+- name: open port 7001 for weblogic
+  firewalld:
+    zone: public
+    port: 7001/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: firewallD.enable
+  notify: 
+    - restart firewalld

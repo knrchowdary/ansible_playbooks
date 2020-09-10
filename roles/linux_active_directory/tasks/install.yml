@@ -1,0 +1,19 @@
+---
+
+- name: install default packages 
+  package: 
+    name: "{{ item }}"
+  loop: "{{ linux_active_directory_packages_for_version_7 }}"
+  when: ansible_distribution_major_version == "7"
+
+- name: Install pexpect using pip
+  pip:
+    name: pexpect
+  when: ansible_distribution_major_version == "7"
+
+- name: install linux6 default packages
+  package:
+    name: "{{ item }}"
+  loop: "{{ linux_active_directory_packages_for_version_6 }}"
+  when: ansible_distribution_major_version == "6"
+  

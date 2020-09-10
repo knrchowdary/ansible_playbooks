@@ -1,0 +1,250 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description="{{ description | default("Service for " + name) }}"
+{% if wants is defined %}
+Wants={{ wants }}
+{% endif -%}
+{% if requires is defined %}
+Requires={{ requires }}
+{% endif -%}
+{% if before is defined %}
+Before={{ before }}
+{% endif -%}
+{% if after is defined %}
+After={{ after }}
+{% endif %}
+{% if assert_architecture is defined %}
+{% for val in assert_architecture %}
+AssertArchitecture={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_virtualization is defined %}
+{% for val in assert_virtualization %}
+AssertVirtualization={{ assert_virtualization }}
+{% endfor -%}
+{% endif -%}
+{% if assert_host is defined %}
+{% for val in assert_host %}
+AssertHost={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_kernel_command_line is defined %}
+{% for val in assert_kernel_command_line %}
+AssertKernelCommandLine={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_kernel_version is defined %}
+{% for val in assert_kernel_version %}
+AssertKernelVersion={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_security is defined %}
+{% for val in assert_security %}
+AssertSecurity={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_capability is defined %}
+{% for val in assert_capability %}
+AssertCapability={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_acpower is defined %}
+{% for val in assert_acpower %}
+AssertACPower={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_needs_update is defined %}
+{% for val in assert_needs_update %}
+AssertNeedsUpdate={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_first_boot is defined %}
+{% for val in assert_first_boot %}
+AssertFirstBoot={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_path_exists is defined %}
+{% for val in assert_path_exists %}
+AssertPathExists={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_path_exists_glob is defined %}
+{% for val in assert_path_exists_glob %}
+AssertPathExistsGlob={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_path_is_directory is defined %}
+{% for val in assert_path_is_directory %}
+AssertPathIsDirectory={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_path_is_symbolic_link is defined %}
+{% for val in assert_path_is_symbolic_link %}
+AssertPathIsSymbolicLink={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_path_is_mount_point is defined %}
+{% for val in assert_path_is_mount_point %}
+AssertPathIsMountPoint={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_path_is_read_write is defined %}
+{% for val in assert_path_is_read_write %}
+AssertPathIsReadWrite={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_directory_not_empty is defined %}
+{% for val in assert_directory_not_empty %}
+AssertDirectoryNotEmpty={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_file_not_empty is defined %}
+{% for val in assert_file_not_empty %}
+AssertFileNotEmpty={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_file_is_executable is defined %}
+{% for val in assert_file_is_executable %}
+AssertFileIsExecutable={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_user is defined %}
+{% for val in assert_user %}
+AssertUser={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_group is defined %}
+{% for val in assert_group %}
+AssertGroup={{ val }}
+{% endfor -%}
+{% endif -%}
+{% if assert_control_group_controller is defined %}
+{% for val in assert_control_group_controller %}
+AssertControlGroupController={{ val }}
+{% endfor -%}
+{% endif -%}
+
+[Service]
+{% if type is defined %}
+Type={{ type }}
+{% endif -%}
+{% if pid_file is defined %}
+PIDFile={{ pid_file }}
+{% endif -%}
+
+{% if limit_no_file is defined %}
+LimitNOFILE={{ limit_no_file }}
+{% endif -%}
+
+{% if limit_nproc is defined %}
+LimitNPROC={{ limit_nproc }}
+{% endif -%}
+
+{% if timeout_sec is defined %}
+TimeoutSec={{ timeout_sec }}
+{% endif -%}
+{% if restart is defined %}
+RestartSec={{ restart_sec | default('30') }}
+Restart={{ restart }}
+{% endif -%}
+
+{% if environment_vars is defined %}
+{% for env in environment_vars %}
+Environment={{ env }}
+{% endfor -%}
+{% endif -%}
+{% if environment_file is defined %}
+EnvironmentFile={{ environment_file }}
+{% endif -%}
+
+{% if working_directory is defined %}
+WorkingDirectory={{ working_directory }}
+{% endif -%}
+{% if user is defined %}
+User={{ user }}
+{% endif -%}
+{% if group is defined %}
+Group={{ group }}
+{% endif -%}
+
+{% if oom_score_adjust is defined %}
+OOMScoreAdjust={{ oom_score_adjust }}
+{% endif -%}
+{% if nice is defined %}
+Nice={{ nice }}
+{% endif -%}
+
+{% if exec_stop is defined %}
+{% if exec_stop is not string %}
+{% for val in exec_stop -%}
+ExecStop={{ val }}
+{% endfor %}
+{% else %}
+ExecStop={{ exec_stop }}
+{% endif -%}
+{% endif -%}
+{% if exec_stop_post is defined %}
+{% if exec_stop_post is not string %}
+{% for val in exec_stop_post -%}
+ExecStopPost={{ val }}
+{% endfor %}
+{% else %}
+ExecStopPost={{ exec_stop_post }}
+{% endif -%}
+{% endif -%}
+{% if exec_reload is defined %}
+{% if exec_reload is not string %}
+{% for val in exec_reload -%}
+ExecReload={{ val }}
+{% endfor %}
+{% else %}
+ExecReload={{ exec_reload }}
+{% endif -%}
+{% endif -%}
+
+{% if exec_start_pre is defined %}
+{% if exec_start_pre is not string %}
+{% for val in exec_start_pre -%}
+ExecStartPre={{ val }}
+{% endfor %}
+{% else %}
+ExecStartPre={{ exec_start_pre }}
+{% endif -%}
+{% endif -%}
+{% if exec_start_post is defined %}
+{% if exec_start_post is not string %}
+{% for val in exec_start_post -%}
+ExecStartPost={{ val }}
+{% endfor %}
+{% else %}
+ExecStartPost={{ exec_start_post }}
+{% endif -%}
+{% endif -%}
+{% if exec_start is defined %}
+{% if exec_start is not string %}
+{% for val in exec_startt -%}
+ExecStart={{ val }}
+{% endfor %}
+{% else %}
+ExecStart={{ exec_start }}
+{% endif -%}
+{% endif -%}
+
+{% if standard_input is defined %}
+StandardInput={{ standard_input }}
+{% endif -%}
+{% if standard_output is defined %}
+StandardOutput={{ standard_output }}
+{% endif -%}
+{% if standard_error is defined %}
+StandardError={{ standard_error }}
+{% endif %}
+
+[Install]
+{% if wanted_by is defined %}
+WantedBy={{ wanted_by }}
+{% endif -%}
+{% if required_by is defined %}
+RequiredBy={{ required_by }}
+{% endif %}

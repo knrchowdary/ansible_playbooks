@@ -1,0 +1,6 @@
+---
+- name: adding ability for application user to edit the /etc/hosts file
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: "^{{edit_hosts_username}} ALL = (root) NOPASSWD: sudoedit /etc/hosts$"
+    line: "{{edit_hosts_username}} ALL = (root) NOPASSWD: sudoedit /etc/hosts"

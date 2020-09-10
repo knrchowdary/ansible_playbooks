@@ -1,0 +1,5 @@
+---
+- name: restart collector
+  service:
+    name: "{{ collector_service }}"
+    state: "{{ collector_restart_state }}"

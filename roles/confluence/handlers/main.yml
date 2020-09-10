@@ -1,0 +1,6 @@
+---
+- name: confluence restart
+  service: name=confluence state=restarted
+
+- name: restart firewalld
+  service: name=firewalld state=restarted  

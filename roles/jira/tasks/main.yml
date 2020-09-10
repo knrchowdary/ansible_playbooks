@@ -1,0 +1,83 @@
+---
+- name: Create a user group for jira
+  group: 
+    name: "{{ jira_user_group }}"
+
+- name: Create a user for jira
+  user:
+    name: "{{ jira_user }}"
+    group: "{{ jira_user_group }}"   
+
+- name: Create a directory for jira
+  file:
+    dest: "{{ jira_install_base_dir }}"
+    state: directory
+    owner: "{{ jira_user }}"
+    group: "{{ jira_user_group }}" 
+
+- stat:
+    path: "{{ jira_install_base_dir }}/{{ jira_filename }}-{{ jira_version }}-standalone"
+  register: jira_info
+
+- name: Install jira tar
+  unarchive:
+    src: "{{ jira_download_url }}/{{ jira_filename }}-{{ jira_version }}.tar.gz"
+    dest: "{{ jira_install_base_dir }}"
+    remote_src: yes
+  when: not jira_info.stat.exists  
+              
+- name: Change permission of directories
+  file:
+    path: "{{ jira_install_base_dir }}/{{ jira_filename }}-{{ jira_version }}-standalone"
+    owner: "{{ jira_user }}"
+    group: "{{ jira_user_group }}"
+    mode: 0755
+    recurse: yes
+
+- name: Creat a soft link
+  file:
+    src: "{{ jira_install_base_dir }}/{{ jira_filename }}-{{ jira_version }}-standalone"
+    dest: "{{ jira_install_base_dir }}/jira"
+    owner: "{{ jira_user }}"
+    group: "{{ jira_user_group }}"
+    state: link    
+
+- name: Create jira home directory
+  file:
+    path: "{{ jira_home }}"
+    state: directory
+    owner: "{{ jira_user }}"
+    group: "{{ jira_user_group }}" 
+
+- name: Set jira home for application property
+  template:
+    src: "jira-application.properties.j2"
+    dest: "{{ jira_install_base_dir }}/jira/atlassian-jira/WEB-INF/classes/jira-application.properties"
+    owner: "{{ jira_user }}"
+    group: "{{ jira_user_group }}"
+    mode: 0644    
+
+- name: Create systemd service for jira
+  import_tasks: roles/common_tasks/systemd.yml
+  vars:
+    name: jira
+    state: stopped
+    description: Jira
+    wanted_by: multi-user.target
+    type: forking
+    user: "{{ jira_user }}"
+    environment_vars:
+     - "'JAVA_HOME={{ jira_java_home }}'"
+    exec_start: "{{ jira_install_base_dir }}/jira/bin/start-jira.sh"
+    exec_stop: "{{ jira_install_base_dir }}/jira/bin/stop-jira.sh"
+
+- name: Ensure Jira is started and enabled
+  systemd:
+    name: jira
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- include: dbconfig.yml
+
+- include: post_tasks.yml

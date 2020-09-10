@@ -1,0 +1,27 @@
+dpax_nexus_repo: ""
+dpax_elb_group:
+  - "u-tg-dpaxweb-r3"
+  - "u-tg2-dpaxweb-r3"
+  - "u-tg2-dpaxweb"
+
+# Database variables
+dpax_spring_datasource_url: ""
+dpax_spring_datasource_username: 
+dpax_spring_datasource_password: 
+dpax_direct_connect_url: ""
+dpax_direct_connect_username: 
+dpax_direct_connect_password: 
+dpax_email_from: ""
+dpax_email_pass: 
+dpax_email_requestroomblockemail: ""
+dpax_requestroomblockpass: 
+dpax_email_toapiops: ""
+dpax_pdf_guide_url: ""
+dpax_self_service_baseurl: ""
+dpax_api_sso_url: ""
+dpax_pending_selfservicebooking_url: ""
+dpax_direct_connect_looktobook_url: ""
+
+## dpax_angular role
+dpax_angular_base_url_api: ""
+dpax_angular_base_mock_url_api: ""

@@ -1,0 +1,15 @@
+---
+dpax_mvn_repo: "{{ nexus_url }}/{{ dpax_nexus_repo }}"
+dpax_nexus_username: ""
+dpax_nexus_password: ""
+dpax_artifact_name: DPAX.war
+dpax_folder_name: DPAX
+dpax_group_id: com.apihotels
+dpax_artifact_id: DPAX
+dpax_package_type: war
+dpax_tomcat_home: "/opt/tomcat8"
+dpax_tomcat_deploy: "{{ dpax_tomcat_home }}/webapps"
+dpax_opt_dir: /opt
+dpax_region: "us-east-1"
+dpax_tomcat_user: tomcat8
+dpax_tomcat_group: tomcat8

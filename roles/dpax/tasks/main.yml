@@ -1,0 +1,29 @@
+---
+- name: Gather instance facts 
+  ec2_metadata_facts:
+
+- debug:
+    var: ansible_ec2_instance_id
+
+- name: Instance De-register from elb
+  local_action:
+    module: elb_target
+    region: "{{ dpax_region }}"
+    target_group_name: "{{ item }}"
+    target_id: "{{ ansible_ec2_instance_id }}"
+    state: absent
+  with_items: "{{ dpax_elb_group }}"
+  when: env == 'prod' or env == 'uat'
+
+- include_tasks: deploy.yml
+  tags: task_deploy
+
+- name: Instance register to elb
+  local_action:
+    module: elb_target
+    region: "{{ dpax_region }}"
+    target_group_name: "{{ item }}"
+    target_id: "{{ ansible_ec2_instance_id }}"
+    state: present
+  with_items: "{{ dpax_elb_group }}"
+  when: env == 'prod' or env == 'uat'

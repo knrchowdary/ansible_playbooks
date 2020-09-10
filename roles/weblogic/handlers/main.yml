@@ -1,0 +1,7 @@
+- name: reload systemctl
+  command: systemctl daemon-reload
+
+- name: restart firewalld
+  service:
+    name: firewalld
+    state: restarted

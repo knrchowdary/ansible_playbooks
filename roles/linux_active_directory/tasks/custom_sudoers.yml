@@ -1,0 +1,6 @@
+---
+- name: Adding a line in /etc/sudoers for sudo permissions
+  lineinfile:
+    path: /etc/sudoers
+    line: "%{{ linux_active_directory_sudoers_group }}  ALL=({{ linux_active_directory_sudoers_user }})       ALL" 
+    

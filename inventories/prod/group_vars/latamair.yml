@@ -1,0 +1,22 @@
+---
+apache_timeout: 2400
+apache_directory_override: 
+  "/": 
+    Require: all denied
+    Options: FollowSymLinks
+  "/var/www":
+    AllowOverride: None
+    Require: all granted
+  "/var/www/html":
+    Options: FollowSymLinks
+    AllowOverride: None
+    Order: allow,deny
+    Allow: from all
+
+apache_proxy_override:
+  proxypass:
+    "/ACES": http://{{server_to_proxy[group_names[0]]}}/ACESAIR
+    "/ACESAIR": http://{{server_to_proxy[group_names[0]]}}/ACESAIR
+  proxypass_reverse:
+    "/ACES": http://{{server_to_proxy[group_names[0]]}}/ACESAIR
+    "/ACESAIR": http://{{server_to_proxy[group_names[0]]}}/ACESAIR

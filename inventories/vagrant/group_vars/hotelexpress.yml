@@ -1,0 +1,18 @@
+---
+
+## httpd
+apache_ssl: {}
+apache_server_token: "ProductOnly"
+
+apache_proxy_override:
+  extra:
+    ProxyRequests: "Off"
+    ProxyErrorOverride: "On"
+    ProxyTimeout: 300
+    ProxyBadHeader: Ignore
+  proxypass:
+    "/errorpages/":  "!"
+    "/apierrorpagelogo.png": "!"
+    "/": http://{{server_to_proxy[group_names[0]]}}/
+  proxypass_reverse: 
+    "/": http://{{server_to_proxy[group_names[0]]}}/

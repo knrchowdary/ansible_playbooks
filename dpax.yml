@@ -1,0 +1,9 @@
+- hosts: "{{server_groups}}"
+  serial: 1
+  vars_files:
+    - "inventories/{{ env }}/group_vars/all.yml"
+    - "inventories/{{ env }}/group_vars/AWS_{{ server_groups }}.yml"
+  roles:
+    - dpax  
+  become: yes
+  become_method: sudo

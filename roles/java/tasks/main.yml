@@ -1,0 +1,53 @@
+---
+# tasks file for java
+
+- name: make default directories
+  file: 
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ oracle_java_dir_source }}"
+
+- name: check java installed
+  include: check_java.yml
+
+- name: Download Java RPM
+  get_url: 
+    dest: "{{ oracle_java_dir_source }}/{{ oracle_java_rpm_filename }}"
+    url: "{{ oracle_java_rpm_url }}"
+    url_username: "{{ oracle_java_rpm_url_username }}"
+    url_password: "{{ oracle_java_rpm_url_password }}"
+  register: oracle_java_task_download
+  until: oracle_java_task_download is succeeded
+  become: yes
+  when: oracle_java_version_installed is not defined or oracle_java_version_installed != oracle_java_version_string
+
+- name: install RPM
+  yum:
+    name: "{{ oracle_java_dir_source }}/{{ oracle_java_rpm_filename }}"
+    state: present
+  when: not oracle_java_task_download is skipped
+  become: yes
+
+- name: set Java version as default
+  alternatives:
+    name="{{ java.exe }}"
+    link="/usr/bin/{{ java.exe }}"
+    path="{{ java.path }}/{{ java.exe }}"
+  with_items:
+    - { path: "{{ oracle_java_home }}/bin", exe: 'java' }
+    - { path: "{{ oracle_java_home }}/bin", exe: 'keytool' }
+  loop_control:
+      loop_var: java
+  become: yes
+  when: (
+          oracle_java_set_as_default and
+          oracle_java_task_download is defined and
+          oracle_java_task_download is changed
+        ) or (
+          oracle_java_set_as_default and
+          oracle_java_installed is defined and
+          oracle_java_installed and
+          oracle_java_version_installed is defined and
+          oracle_java_version_installed != oracle_java_version_string)
+  register: oracle_java_task_set_default

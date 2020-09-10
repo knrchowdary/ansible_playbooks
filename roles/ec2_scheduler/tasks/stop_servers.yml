@@ -1,0 +1,20 @@
+---
+- name: Get stopped EC2 instances for the given tag
+  ec2_instance_facts:
+    region: "{{ ec2_scheduler_region }}"
+    filters:
+      "tag:Type": "{{ ec2_scheduler_type }}"
+      "tag:Environment": "{{ ec2_scheduler_environment }}"
+      instance-state-name: running
+  register: ec2_info
+
+- debug:
+    var: item 
+  loop: "{{ ec2_info |json_query('instances[*].instance_id') }}"
+
+- name: Stop Instances
+  ec2:
+    region: "{{ ec2_scheduler_region }}"
+    state: stopped
+    instance_ids: "{{ item }}"
+  loop: "{{ ec2_info |json_query('instances[*].instance_id') }}"

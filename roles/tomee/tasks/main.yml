@@ -1,0 +1,8 @@
+---
+# tasks file for tomee
+#- include: pre_tasks.yml
+
+- include: install.yml
+  when: tomee_is_installed is not defined
+
+- include: configure.yml

@@ -1,0 +1,17 @@
+---
+# defaults file for tomee
+
+tomee_version: "7.0.5"
+tomee_name: "apache-tomee-plume-{{tomee_version}}"
+tomee_url: "{{ nexus_url }}/{{ nexus_repo_thirdparty_raw }}/{{tomee_name}}.zip"
+tomee_url_username: ""
+tomee_url_password: ""
+tomee_dir: "/opt/software"
+tomee_user: aces2dev
+tomee_group: aces2dev
+tomee_start_service: 0
+tomee_port: 3080
+tomee_shutdown_port: 3081
+tomee_java_home: "/opt/aces2/software/jdk1.6.0_45/bin"
+
+

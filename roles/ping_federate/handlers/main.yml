@@ -1,0 +1,12 @@
+---
+# handlers file for ping_federate
+
+- name: restart ping federate
+  service:
+    name: pingfederate
+    state: restarted
+
+- name: restart firewalld
+  service:
+    name: firewalld
+    state: restarted

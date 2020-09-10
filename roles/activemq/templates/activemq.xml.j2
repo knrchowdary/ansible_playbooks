@@ -1,0 +1,644 @@
+ <beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:amq="http://activemq.apache.org/schema/core"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+	<bean
+	class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+	<list>
+      <value>file:../config/activemq/activemq.properties</value>
+	  <value>file:../config/server.properties</value>
+	</list>
+    </property>
+  </bean>
+
+  <broker brokerName="hotelChangeBroker" xmlns="http://activemq.apache.org/schema/core" dataDirectory="${activemq.base}/data" persistent="true">
+
+    <plugins>
+
+      <!-- Configure authentication; Username, passwords and groups -->
+      <simpleAuthenticationPlugin>
+        <users>
+          <authenticationUser username="${activemq.admin.username}" password="${activemq.admin.password}" groups="users,admins"/>
+          <authenticationUser username="${activemq.ext.username}"   password="${activemq.ext.password}"   groups="users"/>
+          <authenticationUser username="guest"                      password="password"                   groups="guests"/>
+        </users>
+      </simpleAuthenticationPlugin>
+
+      <!--  Configure a destination based authorization mechanism -->
+      <authorizationPlugin>
+        <map>
+          <authorizationMap>
+            <authorizationEntries>
+              <authorizationEntry queue="{{ activemq_queue_1 }}"                   read="{{ activemq_admin_group }}"       write="{{ activemq_admin_group }}"       admin="{{ activemq_admin_group }}" />
+             <authorizationEntry queue="{{ activemq_queue_2 }}"             read="{{ activemq_user_groups }}"        write="{{ activemq_admin_user }}"        admin="{{ activemq_admin_user }}" />
+			  <authorizationEntry queue="{{ activemq_queue_3 }}"				read="{{ activemq_user_groups }}"		write="{{ activemq_admin_user }}"		admin="{{ activemq_admin_user }}" /> 
+              <authorizationEntry topic="{{ activemq_topic }}" read="{{ activemq_guest_groups }},{{ activemq_user_groups }}" write="{{ activemq_guest_groups }},{{ activemq_user_groups }}" admin="{{ activemq_guest_groups }},{{ activemq_user_groups }}"/>
+            </authorizationEntries>
+          </authorizationMap>
+        </map>
+      </authorizationPlugin>
+
+    </plugins>
+
+    <managementContext>
+      <managementContext createConnector="true" connectorPort="{{ activemq_connector_port }}"/>
+    </managementContext>
+
+    <transportConnectors>
+      <transportConnector name="local" uri="tcp://${hostname}:${activemq.tcp.port}"/>
+    <transportConnector name="ssl"   uri="ssl://${hostname}:${activemq.ssl.port}?needClientAuth=true"/>
+    </transportConnectors>
+
+
+    <sslContext>
+      <sslContext keyStore="file:${activemq.base}/conf/broker.ks"
+                  keyStorePassword="${activemq.keystore.password}"
+                  trustStore="file:${activemq.base}/conf/broker.ts"
+                  trustStorePassword="${activemq.truststore.password}"/>
+    </sslContext>
+
+    <systemUsage>
+      <systemUsage>
+        <memoryUsage>
+          <memoryUsage limit="512 mb"/>
+        </memoryUsage>
+        <storeUsage>
+          <storeUsage limit="8 gb"/>
+        </storeUsage>
+        <tempUsage>
+          <tempUsage limit="100 mb"/>
+        </tempUsage>
+      </systemUsage>
+    </systemUsage>
+
+    <destinations>
+      <queue name="{{ activemq_queue_1 }}"       physicalName="{{ activemq_queue_physical_name1 }}"/>
+      <queue name="{{ activemq_queue_2 }}" physicalName="{{ activemq_queue_physical_name2 }}"/>
+	  <queue name="{{ activemq_queue_3 }}" physicalName="{{ activemq_queue_physical_name3 }}"/>
+	  <queue name="{{ activemq_queue_4 }}" physicalName="{{ activemq_queue_physical_name4 }}"/>
+      <queue name="{{ activemq_queue_5 }}" physicalName="{{ activemq_queue_physical_name5 }}"/>
+	  <queue name="{{ activemq_queue_6 }}" physicalName="{{ activemq_queue_physical_name6 }}"/>
+	  <queue name="{{ activemq_queue_7 }}" physicalName="{{ activemq_queue_physical_name7 }}"/>
+	  <queue name="{{ activemq_queue_8 }}" physicalName="{{ activemq_queue_physical_name8 }}"/>
+	  <queue name="{{ activemq_queue_9 }}" physicalName="{{ activemq_queue_physical_name9 }}"/>
+      <queue name="{{ activemq_queue_10 }}"  physicalName="{{ activemq_queue_physical_name10 }}"/>
+      <queue name="{{ activemq_queue_11 }}" physicalName="{{ activemq_queue_physical_name11 }}"/>
+      <queue name="{{ activemq_queue_12 }}"     physicalName="{{ activemq_queue_physical_name12 }}" />
+	  <queue name="{{ activemq_queue_13 }}"     physicalName="{{ activemq_queue_physical_name13 }}" />
+      <queue name="{{ activemq_queue_14 }}" physicalName="{{ activemq_queue_physical_name14 }}"/>
+      <queue name="{{ activemq_queue_15 }}" physicalName="{{ activemq_queue_physical_name15 }}"/>
+	  <queue name="{{ activemq_queue_16 }}" physicalName="{{ activemq_queue_physical_name16 }}"/>
+	  <queue name="{{ activemq_queue_17 }}" physicalName="{{ activemq_queue_physical_name17 }}"/>
+	  <queue name="{{ activemq_queue_18 }}" physicalName="{{ activemq_queue_physical_name18 }}"/>
+      <queue name="{{ activemq_queue_19 }}"       physicalName="{{ activemq_queue_physical_name19 }}"/>
+	  <queue name="{{ activemq_queue_20 }}" physicalName="{{ activemq_queue_physical_name20 }}"/>
+	  <queue name="{{ activemq_queue_21 }}" physicalName="{{ activemq_queue_physical_name21 }}"/>
+	  <queue name="{{ activemq_queue_22 }}" physicalName="{{ activemq_queue_physical_name22 }}"/>
+	  <queue name="{{ activemq_queue_23 }}" physicalName="{{ activemq_queue_physical_name23 }}"/>
+	  <queue name="{{ activemq_queue_24 }}" physicalName="{{ activemq_queue_physical_name24 }}"/>
+	  <queue name="{{ activemq_queue_25 }}" physicalName="{{ activemq_queue_physical_name25 }}"/>
+      <queue name="{{ activemq_queue_26 }}" physicalName="{{ activemq_queue_physical_name26 }}"/>
+	  <queue name="{{ activemq_queue_27 }}" physicalName="{{ activemq_queue_physical_name27 }}"/>
+	  <queue name="{{ activemq_queue_28 }}" physicalName="{{ activemq_queue_physical_name28 }}"/>
+	  <queue name="{{ activemq_queue_29 }}" physicalName="{{ activemq_queue_physical_name29 }}"/>
+	  <queue name="{{ activemq_queue_30 }}" physicalName="{{ activemq_queue_physical_name30 }}"/>
+	  <queue name="{{ activemq_queue_31 }}" physicalName="{{ activemq_queue_physical_name31 }}"/>
+      <queue name="{{ activemq_queue_32 }}" physicalName="{{ activemq_queue_physical_name32 }}"/>
+      <queue name="{{ activemq_queue_33 }}" physicalName="{{ activemq_queue_physical_name33 }}"/>
+    </destinations>
+
+  </broker>
+
+  <camelContext id="camel" errorHandlerRef="errorHandler" xmlns="http://camel.apache.org/schema/spring" xmlns:bn="http://aces-solutions.com/booking-notification" xmlns:hn="http://ws.aces.com/crewtracns">
+
+    <!-- TODO Set the redelivery limits as appropriate -->
+    <onException>
+      <exception>java.lang.Exception</exception>
+      <redeliveryPolicy maximumRedeliveries="-1" redeliveryDelay="15000"/>
+    </onException>
+
+		<route>
+		<from uri="weblogic:./AcesJMSModule!HotelQueue" />
+		<transacted />
+		<multicast>
+<!--			<filter>
+					<xpath>(/bn:Booking[@TenantId=1] or /bn:Booking[@TenantId=3] or
+					/bn:Booking[@TenantId=4] or	/bn:Booking[@TenantId=16]) and
+					$JMSType = 'HOTELCHANGE' and $NotificationType = 'NewBooking'
+				   </xpath>
+                   <to uri="xslt:file:../config/activemq/crewTrac/CrewTracHotelRequest.xsl" />				
+				 <bean ref="CrewCareSMSNotificationBean" method="process" />
+				<when>
+					<simple>${header.crewCareNotificationRequired} == 'true'</simple>
+					<to uri="activemq:CrewCareSMSQueue" />
+				</when>
+
+			</filter>-->
+
+			<filter>
+				<xpath>$JMSType = 'HOTELCHANGE'</xpath>
+				<to uri="xslt:file:../config/activemq/crewTrac/CrewTracHotelRequest.xsl" />
+				<to uri="direct:2ETransformation" />
+			</filter>
+			<filter>
+				<xpath>$JMSType = 'HOTELCHANGE'</xpath>
+				<to uri="direct:sabreTransformation" />
+			</filter>
+			<filter>
+				<xpath>/bn:Booking[@TenantId=1] and (/bn:Booking/bn:Booking-Info/bn:transport-request)</xpath>
+                   <to uri="xslt:file:../config/activemq/crewTrac/CrewTracATARequest.xsl" />
+				<to uri="activemq:2eQueue" />
+			</filter>
+	        <filter>
+				<xpath>/bn:Booking[@TenantId=47]</xpath>
+				<to uri="direct:tsTransformation" />
+			</filter>
+             <!--<filter>
+             <xpath>/hn:CrewTracWebServiceChangeRequest[@TenantId=55] and $JMSType = 'HOTELCHANGE' and $NotificationType ='NewBooking'</xpath>
+             <to uri="xslt:file:../config/activemq/HotelRequest.xsl" />
+             <to uri="activemq:F9SabreQueue" />
+			 </filter>-->
+
+		</multicast>
+	</route>
+	<route>
+		<from uri="direct:tsTransformation" />
+		<bean ref="propertyBean" method="process" />
+		<filter>
+			<xpath>(/bn:Booking[@TenantId=47]) and (/bn:Booking/bn:Booking-Info/bn:hotel-request)</xpath>
+			<setHeader headerName="includeRouteDetails">
+				<simple>${header.tsIncludeRouteDetails}</simple>
+			</setHeader>
+			<to uri="xslt:file:../config/activemq/airTransat/TSHotelRequest.xsl" />
+		</filter>
+		<filter>
+			<xpath>(/bn:Booking[@TenantId=47]) and (/bn:Booking/bn:Booking-Info/bn:transport-request)</xpath>
+			<to uri="xslt:file:../config/activemq/airTransat/TSGroundRequest.xsl" />
+		</filter>
+		<bean ref="hotelNotificationBeanTS" method="process" />
+		<when>
+		<simple>${header.isHotel} == 'true'</simple> 
+		<to uri="file:///?fileName=${header.inboundPath}/HotelInd_${header.employeeId}_${header.resvDate}_${header.utcTimeStamp}.xml" />
+		</when>
+		<!-- <when>
+		<simple>${header.isHotel} == 'false'</simple> 
+		<to uri="file:///./?fileName=${header.inboundPath}/GTInd_${header.employeeId}_${header.resvDate}_${header.utcTimeStamp}.xml"  />
+		</when> -->
+	</route>
+	
+	<route>
+		<from uri="weblogic:./AcesJMSModule!CrewControlHotelQueue" />
+		<bean ref="crewControlNotificationWebServiceBean" method="process" />
+		<log loggingLevel="INFO" message="booking information sent."/>
+	</route>
+	
+	<route>
+		<from uri="direct:2ETransformation" />
+		<transacted />
+		<multicast>
+			<filter>
+				<xpath>/hn:CrewTracWebServiceChangeRequest[@TenantId=1] and $JMSType =
+					'HOTELCHANGE'
+				</xpath>
+				<to uri="activemq:2eQueue" />
+			</filter>	
+           <filter>
+               <xpath>/hn:CrewTracWebServiceChangeRequest[@TenantId=21] and $JMSType = 'HOTELCHANGE'</xpath>
+               <to uri="activemq:2eQueueVX"/>
+           </filter>			
+		</multicast>
+	</route>
+	
+
+	<route>
+		<from uri="direct:sabreTransformation" />
+		<transacted />
+		<multicast>
+			<filter>
+				<xpath>/bn:Booking[@TenantId=1] and $JMSType
+					= 'HOTELCHANGE' and $NotificationType = 'NewBooking'
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:B6SabreQueue" />
+			</filter>
+			<filter>
+				<xpath>/bn:Booking[@TenantId=55] and $JMSType
+					= 'HOTELCHANGE' and $NotificationType = 'NewBooking'
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:F9SabreQueue" />
+			</filter>		
+			<filter>
+				<xpath>(/bn:Booking[@TenantId=3] or
+					/bn:Booking[@TenantId=4]) and $JMSType =
+					'HOTELCHANGE' and $NotificationType = 'NewBooking'
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:QKSabreQueue" />
+			</filter>
+			<filter>
+				<xpath>/bn:Booking[@TenantId=6] and $JMSType
+					= 'HOTELCHANGE' and $NotificationType = 'NewBooking'
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:9ESabreQueue" />
+			</filter>
+			<filter>
+				<xpath>(/bn:Booking[@TenantId=7] and $JMSType =
+					'HOTELCHANGE' and $NotificationType = 'NewBooking') and
+					(/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='CA']
+					or
+					/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='FO']
+					or
+					/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='RO'])
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:HAPilotSabreQueue" />
+			</filter>
+			<filter>
+				<xpath>(/bn:Booking[@TenantId=7] and $JMSType
+					= 'HOTELCHANGE' and $NotificationType = 'NewBooking') and
+					(/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='FA']
+					or
+					/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='IF']
+					or
+					/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='LP']
+					or
+					/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='JL']
+					or
+					/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='KL']
+					or
+					/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='KS']
+					or
+					/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='ML']
+					or
+					/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='MS']
+					or
+					/bn:Booking/bn:Booking-Info/bn:crew-request[@POS='JS'])
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:HACabinSabreQueue" />
+			</filter>
+			<filter>
+				<xpath>/bn:Booking[@TenantId=21] and
+					$JMSType = 'HOTELCHANGE' and $NotificationType = 'NewBooking'
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:VXSabreQueue" />
+			</filter>
+			<filter>
+				<xpath>/bn:Booking[@TenantId=34] and
+					$JMSType = 'HOTELCHANGE' and $NotificationType = 'NewBooking'
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:EVCSabreQueue" />
+			</filter>
+			<filter>
+				<xpath>/bn:Booking[@TenantId=35] and
+					$JMSType = 'HOTELCHANGE' and $NotificationType = 'NewBooking'
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:EVESabreQueue" />
+			</filter>
+			<filter>
+				<xpath>/bn:Booking[@TenantId=48] and
+					$JMSType = 'HOTELCHANGE' and $NotificationType = 'NewBooking'
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:PDSabreQueue" />
+			</filter>
+			<filter>
+				<xpath>/bn:Booking[@TenantId=49] and
+					$JMSType = 'HOTELCHANGE' and $NotificationType = 'NewBooking'
+				</xpath>
+				<to uri="xslt:file:../config/activemq/SabreHotelRequest.xsl" />
+				<to uri="activemq:YVSabreQueue" />
+			</filter>
+		</multicast>
+	</route>
+
+    <!-- Send to B6 Sabre CrewTrac instance -->
+    <route>
+      <from uri="activemq:B6SabreQueue"/>
+      <transacted/>
+      <bean ref="B6JmsToWebServiceBean"/>
+    </route>
+	
+
+    <!-- Send to QK Sabre CrewTrac instance -->
+    <route>
+      <from uri="activemq:QKSabreQueue"/>
+      <transacted/>
+      <bean ref="QKJmsToWebServiceBean"/>
+    </route>
+	 <route>
+      <from uri="activemq:PDSabreQueue"/>
+      <transacted/>
+      <bean ref="PDJmsToWebServiceBean"/>
+    </route>
+    <route>
+      <from uri="activemq:YVSabreQueue"/>
+      <transacted/>
+      <bean ref="YVJmsToWebServiceBean"/>
+    </route>
+	<route>
+      <from uri="activemq:F9SabreQueue"/>
+      <transacted/>
+      <bean ref="F9JmsToWebServiceBean"/>
+    </route>
+     <!-- Send to 9E Sabre CrewTrac instance -->
+    <route>
+      <from uri="activemq:9ESabreQueue"/>
+      <transacted/>
+      <bean ref="9EJmsToWebServiceBean"/>
+    </route>
+
+	 <!-- Send to VX Sabre CrewTrac instance -->
+    <route>
+      <from uri="activemq:VXSabreQueue"/>
+      <transacted/>
+      <bean ref="VXJmsToWebServiceBean"/>
+    </route>
+
+    <!-- Send to HA messages to B2B ActiveMQ -->
+    <route>
+      <from uri="activemq:HAPilotSabreQueue"/>
+      <transacted/>
+		<to uri="activemqB2B:HAPilotSabreQueue"/>
+    </route>
+
+    <route>
+      <from uri="activemq:HACabinSabreQueue"/>
+      <transacted/>
+		<to uri="activemqB2B:HACabinSabreQueue"/>
+    </route> 
+
+	 <!-- Send to EVC Sabre CrewTrac instance -->
+    <route>
+      <from uri="activemq:EVCSabreQueue"/>
+      <transacted/>
+      <bean ref="EVCJmsToWebServiceBean"/>
+    </route>
+
+	 <!-- Send to EVE Sabre CrewTrac instance -->
+     <route>
+      <from uri="activemq:EVESabreQueue"/>
+      <transacted/>
+      <bean ref="EVEJmsToWebServiceBean"/>
+    </route>
+
+    <!-- Setup keep-alive timer to keep the VPN from disconnecting -->
+<!--    <route>
+        <from uri="timer://foo?fixedRate=true&amp;period=300000"/>
+        <setBody>
+            <simple>VPN keep alive timer</simple>
+        </setBody>
+        <to uri="mqseries:queue:API.KEEPALIVE.TEST"/>
+    </route> -->
+
+
+    <!-- Test timer to send messages to WMQ with properties -->
+<!--
+    <route>
+        <from uri="timer://foo?fixedRate=true&amp;period=60000"/>
+        <setHeader headerName="HRSMessageType">
+            <constant>message-received</constant>        
+        </setHeader>
+        <setHeader headerName="HRSDestination">
+            <constant>IFS</constant>        
+        </setHeader>
+        <setHeader headerName="HRSSource">
+            <constant>ACES</constant>        
+        </setHeader>
+        <setHeader headerName="HRSCorrelationID">
+            <constant>ACES99</constant>        
+        </setHeader>
+        <setBody> 
+            <constant>
+&lt;tns:message-received xmlns:tns="http://aces-solutions.com/transactions" HRSCorrelationID="ACES99" message-type="add-pairing" message-source="IFS" expected-responses="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://aces-solutions.com/transactions message-received.xsd"/&gt;
+            </constant>
+        </setBody>   
+        <to uri="activemq:wmq.Out.Queue"/>
+    </route>
+-->
+
+    <!-- Get data from MQ -->
+ <!--   <route>
+      <from uri="mqseries:queue:INBOUND.HOTELBOOKING.API"/>
+      <transacted/>
+      <multicast>
+        <to uri="activemq:wmq.In.Queue"/>
+      </multicast>
+    </route>  -->
+
+   <!-- <route>
+      <from uri="activemq:wmq.Out.Queue"/>
+      <transacted/>
+      <bean ref="WMQConnector"/>
+    </route>  -->
+
+
+  </camelContext>
+  
+  <bean id="errorHandler" class="org.apache.camel.builder.DeadLetterChannelBuilder">
+    <property name="deadLetterUri" value="mock:error"/>
+  </bean>
+
+  <bean id="B6JmsToWebServiceBean" class="com.aces.activemq.JmsToSabreWebServiceBean">
+    <property name="url">
+      <value>${webservice.url.b6}</value>
+    </property>
+  </bean>
+<bean id="PDJmsToWebServiceBean" class="com.aces.activemq.ActiveMQToSabreWS">
+    <property name="url">
+      <value>${webservice.url.pd}</value>
+    </property>   
+	<property name="soapAction">
+      <value>${webservice.soapAction.pd}</value>
+    </property>
+  </bean>
+  <bean id="YVJmsToWebServiceBean" class="com.aces.activemq.ActiveMQToSabreWS">
+    <property name="url">
+      <value>${webservice.url.yv}</value>
+    </property>
+    <property name="soapAction">
+      <value>${webservice.soapAction.yv}</value>
+    </property>
+  </bean>
+  <bean id="9EJmsToWebServiceBean" class="com.aces.activemq.ActiveMQToSabreWS">
+    <property name="url">
+      <value>${webservice.url.9e}</value>
+    </property>
+    <property name="soapAction">
+      <value>${webservice.soapAction.9e}</value>
+    </property>
+  </bean>
+
+  <bean id="VXJmsToWebServiceBean" class="com.aces.activemq.ActiveMQToSabreWS">
+    <property name="url">
+      <value>${webservice.url.vx}</value>
+    </property>
+    <property name="soapAction">
+      <value>${webservice.soapAction.vx}</value>
+    </property>
+  </bean>
+
+  <bean id="QKJmsToWebServiceBean" class="com.aces.activemq.ActiveMQToSabreWS">
+    <property name="url">
+      <value>${webservice.url.qk}</value>
+    </property>
+    <property name="soapAction">
+      <value>${webservice.soapAction.qk}</value>
+    </property>
+  </bean>
+
+  <bean id="EVCJmsToWebServiceBean" class="com.aces.activemq.ActiveMQToSabreWS">
+    <property name="url">
+      <value>${webservice.url.evc}</value>
+    </property>
+    <property name="soapAction">
+      <value>${webservice.soapAction.evc}</value>
+    </property>
+  </bean>
+
+  <bean id="EVEJmsToWebServiceBean" class="com.aces.activemq.ActiveMQToSabreWS">
+    <property name="url">
+      <value>${webservice.url.eve}</value>
+    </property>
+    <property name="soapAction">
+      <value>${webservice.soapAction.eve}</value>
+    </property>
+  </bean>
+  
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+        <value>classpath:activemq.properties</value>
+    </property>
+  </bean>
+
+   <bean id="crewControlNotificationWebServiceBean" class="com.aces.activemq.CrewControlNotificationWebServiceBean">
+    <property name="url">
+      <value>${webservice.url.crewcontrol}</value>
+    </property>
+    <property name="soapAction">
+      <value>${webservice.soapAction.crewcontrol}</value>
+    </property>
+  </bean>
+
+  <bean id="weblogic" class="org.apache.camel.component.jms.JmsComponent">
+    <property name="connectionFactory" ref ="weblogicConnectionFactory"/>
+  </bean>
+
+  <bean id="weblogicConnectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="AcesConnectionFactory"/>
+    <property name="jndiTemplate" ref="weblogicJndiTemplate"/>
+  </bean>
+
+  <bean id="weblogicJndiTemplate" class="org.springframework.jndi.JndiTemplate">
+    <property name="environment">
+      <props>
+        <prop key="java.naming.factory.initial">weblogic.jndi.WLInitialContextFactory</prop>
+        <prop key="java.naming.provider.url">t3://localhost:${activemq.wls.port}</prop>
+      </props>
+    </property>
+  </bean>
+
+
+<!--  <bean id="WMQConnector" class="com.aces.activemq.WMQConnector">
+    <property name="wmqSndQueueName" value="OUTBOUND.HOTELBOOKING.API"/>
+    <property name="reconnectTimer"  value="30000"/>
+    <property name="connector"       ref="mqseries"/>
+  </bean>  -->
+
+<!--  <bean id="mqseries" class="org.apache.activemq.camel.component.ActiveMQComponent" >
+    <property name="connectionFactory">
+      <bean id="myProxyConnectionFactory" class="org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter">
+        <property name="username" value="${activemq.wmq.username}"/>
+        <property name="targetConnectionFactory">
+          <bean class="com.ibm.mq.jms.MQQueueConnectionFactory">
+            <property name="hostName"      value="${activemq.wmq.hostName}"/>
+            <property name="port"          value="${activemq.wmq.port}"/>
+            <property name="queueManager"  value="${activemq.wmq.queueManager}"/>
+            <property name="channel"       value="${activemq.wmq.channel}"/> 
+            <property name="transportType" value="1"/> 
+          </bean> 
+        </property> 
+      </bean>
+    </property> 
+  </bean> -->
+
+  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent" >
+    <property name="connectionFactory" ref="jmsConnectionFactory"/>
+    <property name="transacted" value="true"/>
+    <property name="transactionManager" ref="jmsTransactionManager"/>
+  </bean>
+
+  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="vm://hotelChangeBroker?create=false&amp;waitForStart=10000" />
+    <property name="userName"  value="${activemq.admin.username}"/>
+    <property name="password"  value="${activemq.admin.password}"/>
+  </bean>
+
+  <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
+    <property name="connectionFactory" ref="jmsConnectionFactory"/>
+  </bean>
+
+<!-- B2B ActiveMQ for HA start -->
+
+  <bean id="activemqB2B" class="org.apache.activemq.camel.component.ActiveMQComponent" >
+    <property name="connectionFactory" ref="jmsConnectionFactoryB2B"/>
+  </bean>
+
+  <bean id="CrewCareSMSNotificationBean" class="com.aces.activemq.CrewCareSMSNotificationBean">
+    <property name="hours" value="${crewcare.notificationHours}" />  
+  </bean>  
+  <bean id="hotelNotificationBeanTS" class="com.aces.activemq.airtransat.HotelNotificationBeanTS">
+	<property name="threshold"  value="${airTransat.file.threshold}"/>
+	<property name="sourcePath" value="${airTransat.inbound.path}"/>
+  </bean>
+  <bean id="propertyBean" class="com.aces.activemq.ActiveMQPropertyBean">
+	<property name="tsIncludeRouteDetails"  value="${airTransat.includeRouteDetails}"/>
+  </bean>
+  <bean id="jmsConnectionFactoryB2B" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="tcp://${activemq.b2b.ha.hostName}:${activemq.b2b.ha.port}" />
+    <property name="userName"  value="${activemq.b2b.ha.username}"/>
+    <property name="password"  value="${activemq.b2b.ha.password}"/>
+  </bean>
+   <bean id="F9JmsToWebServiceBean" class="com.aces.activemq.ActiveMQToSabreWS">
+    <property name="url">
+      <value>${webservice.url.f9}</value>
+    </property>
+          <property name="soapAction">
+      <value>${webservice.soapAction.f9}</value>
+    </property>
+
+  </bean>
+<!-- B2B ActiveMQ for HA end  -->
+
+  <jetty xmlns="http://mortbay.com/schemas/jetty/1.0">
+    <connectors>
+      <nioConnector port="${activemq.console.port}"/>
+    </connectors>
+
+    <handlers>
+      <webAppContext contextPath="/admin" resourceBase="${activemq.base}/webapps/admin" logUrlOnStart="true"/>
+    </handlers>
+  </jetty>
+
+	<bean class="com.aces.spring.ServiceFinder" />
+	<bean name="timezoneFileLocation" class="java.util.HashMap">
+	<constructor-arg>
+		<map>
+			<entry key="TIMEZONE_XML" value="${server.timezonestore.loc}/timezone.xml" />
+			<entry key="AIRPORTZONE_XML" value="${server.timezonestore.loc}/airportzone.xml" />
+			<entry key="FIXEDDST_XML" value="${server.timezonestore.loc}/fixedDST.xml" />
+			<entry key="RULESDST_XML" value="${server.timezonestore.loc}/rulesDST.xml" />
+		</map>
+	</constructor-arg>
+	</bean>
+
+</beans>

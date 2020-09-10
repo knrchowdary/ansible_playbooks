@@ -1,0 +1,25 @@
+---
+- name: enable yum repository
+  yum_repository: 
+    name: tis-samba
+    description: tis-samba
+    baseurl: http://samba.tranquil.it/centos7/stable/
+    gpgcheck: no
+    enabled: yes
+
+- name: install default packages of samba compile
+  package: 
+    name: "{{ item }}"
+  with_items:
+    - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    - krb5-workstation
+    - samba
+    - samba-winbind
+    - samba-winbind-clients
+
+- name: enabled systemd service
+  systemd:
+    enabled: yes
+    name: "{{ item }}"
+  with_items: 
+    - samba

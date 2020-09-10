@@ -1,0 +1,13 @@
+---
+
+- name: Set SELinux
+  selinux:
+    policy: "{{ base_selinux_policy }}"
+    state: "{{ base_selinux_state }}"
+
+- name: Ensure directories have correct contexts
+  shell: restorecon -Rv {{item}}
+  with_items:
+    - "{{ base_selinux_restore_contexts }}"
+  notify:
+    - reset directory perms

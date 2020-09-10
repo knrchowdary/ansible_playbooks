@@ -1,0 +1,8 @@
+---
+
+apache_proxy_override:
+  proxypass:
+    "/appatl": http://{{server_to_proxy[group_names[0]]}}
+
+  proxypass_reverse:
+    "/appatl": http://{{server_to_proxy[group_names[0]]}}

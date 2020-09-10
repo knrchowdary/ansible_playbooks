@@ -1,0 +1,29 @@
+---
+jira_user_group: "jira"
+jira_user: "jira"
+jira_version: "7.13.1"
+jira_download_url: "https://www.atlassian.com/software/jira/downloads/binary"
+jira_filename: "atlassian-jira-core"
+jira_version_sha256sum: ""
+jira_install_base_dir: "/opt"
+jira_url_username: ""
+jira_url_password: ""
+jira_home: "/var/jira"
+jira_java_home: "/usr/java/default"
+jira_java_mysql_connector_version: 8.0.19
+jira_rds_instance_end_point: "api-jira-dev.c0mzu8hsemhs.us-east-1.rds.amazonaws.com"
+jira_database_port: 3306
+jira_database_name: d_jira_db
+jira_database_type: "mysql"
+jira_database_url: "jdbc:mysql://{{ jira_rds_instance_end_point }}:{{ jira_database_port }}/{{ jira_database_name }}?useUnicode=true&amp;useSSL=false&amp;characterEncoding=UTF8&amp;sessionVariables=default_storage_engine=InnoDB"
+jira_database_driver_class: "com.mysql.jdbc.Driver"
+jira_database_username: "admin"
+jira_database_password: !vault |
+          $ANSIBLE_VAULT;1.2;AES256;api_default
+          63313164303665363330373465323266323966396534353862356538643937366661636166643562
+          3739666463383862626533646437663639376134343735340a376235333464376634633033383536
+          64363935313462373162663865653362663964663738653333653861363930363733363433663865
+          3137313736373066310a656565316235663362353561666239323163353230366663356339626232
+          3366
+jira_database_validation_query: "select 1"
+jira_database_validation_query_timeout: "3"

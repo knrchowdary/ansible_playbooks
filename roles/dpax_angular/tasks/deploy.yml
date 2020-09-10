@@ -1,0 +1,67 @@
+---
+- name: "remove file from {{ dpax_angular_opt_dir }}"
+  file:
+    path: "{{ dpax_angular_opt_dir }}/{{ dpax_angular_artifact_name }}"
+    state: absent
+    
+- name:  download from nexus
+  maven_artifact:
+    group_id: "{{ dpax_angular_group_id }}"
+    artifact_id: "{{ dpax_angular_artifact_id }}"
+    version: "{{ dpax_angular_version }}"
+    extension: "{{ dpax_angular_package_type }}"
+    repository_url: "{{ dpax_angular_mvn_repo }}"
+    username: "{{ dpax_angular_nexus_username }}"
+    password: "{{ dpax_angular_nexus_password }}"
+    dest: "{{ dpax_angular_opt_dir }}/{{ dpax_angular_artifact_name }}"
+    owner: "{{ dpax_angular_user }}" 
+    group: "{{ dpax_angular_group }}"
+  register: download_war
+  tags: download
+
+- name: removing old deployment folder
+  file:
+    path: "{{ item }}"
+    state: absent
+  register: undeployment
+  with_items:
+    - "{{ dpax_angular_apache_deploy }}/{{ dpax_angular_folder_name }}"
+  tags: undeploy
+
+- name: copy api-hotels-web folder
+  unarchive:
+    src: "{{ dpax_angular_opt_dir }}/{{ dpax_angular_artifact_name }}"
+    dest: "{{ dpax_angular_apache_deploy }}"
+    owner: "{{ dpax_angular_user }}" 
+    group: "{{ dpax_angular_group }}"
+    remote_src: yes
+  register: deployment
+  tags: deploy
+
+- name: copy .htaccess file
+  copy:
+    src: ".htaccess"
+    dest: "{{ dpax_angular_apache_deploy }}/{{ dpax_angular_folder_name }}/.htaccess"
+    owner: "{{ dpax_angular_user }}" 
+    group: "{{ dpax_angular_group }}"
+    mode: '0644'
+
+- name: copy config.json template
+  template:
+     src: config.json.j2
+     dest: "{{ dpax_angular_apache_deploy }}/{{ dpax_angular_folder_name }}/assets/app-config/config.json"
+     owner: "{{ dpax_angular_user }}" 
+     group: "{{ dpax_angular_group }}"
+     mode: '0644'
+  notify: restart apache
+
+- name: restart apache
+  service:
+    name: "{{ service_name }}"
+    state: restarted
+  when: deployment is succeeded
+
+- name: "remove file from {{ dpax_angular_opt_dir }}"
+  file:
+    path: "{{ dpax_angular_opt_dir }}/{{ dpax_angular_artifact_name }}"
+    state: absent

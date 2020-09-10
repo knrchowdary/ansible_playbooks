@@ -1,0 +1,98 @@
+- name: NEXUS | Ensure nexus group
+  group:
+    name: "{{ nexus_group }}"
+    state: present
+    system: yes
+
+- name: NEXUS | Ensure nexus user
+  user:
+    name: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    system: yes
+    state: present
+
+- name: NEXUS | Create install path
+  file:
+    dest: "{{ nexus_installation_path}}"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    state: directory
+
+- name: NEXUS | Download nexus_package
+  get_url:
+    url: "{{ nexus_sources_url }}"
+    dest: "{{ nexus_download_dir }}/{{ nexus_package }}"
+    force: no
+
+- name: get if nexus run file found
+  stat:
+    path: "{{ nexus_home_dir }}/bin/nexus.rc"
+  register: stat_result
+
+- name: if run file found == installed
+  set_fact: 
+    nexus_is_installed: true
+  when: stat_result.stat.exists
+
+- name: NEXUS | Untar nexus
+  unarchive:
+    src: "{{ nexus_download_dir }}/{{ nexus_package }}"
+    dest: "{{ nexus_installation_path }}"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    remote_src: yes
+  when: nexus_is_installed is not defined
+
+- name: NEXUS | Fix permissions
+  file:
+    dest: "{{ nexus_installation_path }}"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    recurse: yes
+
+- name: NEXUS | Update symlink nexus
+  file:
+    path: "{{ nexus_home_dir }}"
+    src: "{{ nexus_installation_path }}/nexus-{{ nexus_version }}"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    state: link
+    follow: false
+
+- name: NEXUS | Set nexus user
+  lineinfile:
+    dest: "{{ nexus_home_dir }}/bin/nexus.rc"
+    regexp: ".*run_as_user=.*"
+    line: "run_as_user=\"{{ nexus_user }}\""
+
+- name: NEXUS | Create systemd service for starting nexus
+  import_tasks: roles/common_tasks/systemd.yml
+  vars:
+    name: nexus
+    description: nexus Service
+    wanted_by: multi-user.target
+    type: forking
+    user: "{{ nexus_user }}" 
+    exec_start: "{{ nexus_installation_path }}/nexus/bin/nexus start"
+    exec_stop: "{{ nexus_installation_path }}/nexus/bin/nexus stop"
+    restart: on-abort
+  when: "ansible_service_mgr == 'systemd'"
+
+- name: NEXUS | Create sysv service configuration
+  file:
+    path: "/etc/init.d/nexus"
+    src: "{{ nexus_home_dir }}/bin/nexus"
+    state: link
+  when: "ansible_service_mgr != 'systemd'"
+  notify: restart nexus
+
+# - name: open port 9999 for PingFederate
+#   firewalld:
+#     zone: public
+#     port: 9999/tcp
+#     permanent: yes
+#     state: enabled
+#     immediate: yes
+#   when: firewallD.enable
+#   notify: 
+#     - restart firewalld

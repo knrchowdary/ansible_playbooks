@@ -1,0 +1,42 @@
+---
+
+- name: create software directory under opt
+  file:
+    dest: "{{ ant_software_path }}"
+    mode: '0755'
+    state: directory
+  become: yes
+  become_user: "{{ aces_aces2dev_user }}"
+
+- name: Ant Download and extract
+  unarchive: 
+    src: "{{ ant_zip_url }}"
+    dest: "{{ ant_software_path }}"
+    remote_src: yes
+  become: yes
+  become_user: "{{ aces_aces2dev_user }}"
+  register: ant_download
+  
+- name: Create symbolic link for the ANT_HOME directory
+  file: 
+    src: "{{ ant_binarie_home }}" 
+    dest: "{{ ant_home }}" 
+    state: link
+  become: yes
+
+- name: set up the environment profile for Ant in /etc/profile.d
+  template: 
+    src: ant_env.j2 
+    dest: "{{ ant_env }}"
+  become: yes
+
+- name: Get ant version.
+  shell: "bash -lc 'ant -version'"
+  register: result
+  changed_when: false
+  ignore_errors: True
+
+- debug: 
+    var: result.stdout
+
+

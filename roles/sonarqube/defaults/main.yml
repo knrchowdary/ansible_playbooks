@@ -1,0 +1,36 @@
+---
+# default file for sonarqube
+sonarqube_group: "sonar"
+sonarqube_user: "sonar"
+sonarqube_version: "7.9.1"
+sonarqube_download_url: "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-{{ sonarqube_version }}.zip"
+sonarqube_download_base_dir: "/opt"
+sonarqube_install_base_dir: "/opt/sonarqube"
+sonarqube_install_dir_name: "sonarqube-{{ sonarqube_version }}"
+sonarqube_install_tmp_dir: "{{ sonarqube_download_base_dir }}/{{ sonarqube_install_dir_name }}"
+sonarqube_service_file_path: "{{ sonarqube_install_base_dir }}/bin/linux-x86-64/sonar.sh"
+sonarqube_config_file_path: "{{ sonarqube_install_base_dir }}/conf/sonar.properties"
+
+sonarqube_max_map_count: "262144"
+sonarqube_fs_file_max: "65536"
+
+sonarqube_db_name: "d_sonar_db"
+
+sonarqube_jdbc_url: "api-sonar-dev.c0mzu8hsemhs.us-east-1.rds.amazonaws.com"
+sonarqube_jdbc_username: postgres
+sonarqube_jdbc_password: !vault |
+          $ANSIBLE_VAULT;1.2;AES256;api_default
+          65333332666632643261366634333561366330653235623862623539326131303833326164326262
+          3930633232306166663438323139633134343939303931630a396365633961376338303534356338
+          31366533323565383533646235303137393631653334633037383130396432653534316430383430
+          3839346131616165650a653762626566363732636230363637643130616134373535613061643964
+          6164
+sonarqube_web_host: "0.0.0.0"
+sonarqube_web_context: "/sonar"
+
+sonarqube_config_vars:
+  - { regexp: '^[#]?sonar\.jdbc\.username\=', line: "sonar.jdbc.username={{ sonarqube_jdbc_username }}" }
+  - { regexp: '^[#]?sonar\.jdbc\.password\=', line: "sonar.jdbc.password={{ sonarqube_jdbc_password }}" }
+  - { regexp: '^[#]?sonar\.jdbc\.url\=', line: "sonar.jdbc.url=jdbc:postgresql://{{ sonarqube_jdbc_url }}/{{ sonarqube_db_name }}" }
+  - { regexp: '^[#]?sonar\.web\.host\=', line: "sonar.web.host={{ sonarqube_web_host }}" }
+  - { regexp: '^[#]?sonar\.web\.context\=', line: "sonar.web.context={{ sonarqube_web_context }}" }

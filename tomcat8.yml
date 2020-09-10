@@ -1,0 +1,9 @@
+--- 
+- name: Tomcat8 deployment
+  hosts: "{{server_groups}}"
+  roles: 
+    - base
+    - java
+    - tomcat8  
+  become: yes
+  become_user: root

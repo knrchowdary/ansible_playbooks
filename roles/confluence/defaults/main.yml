@@ -1,0 +1,46 @@
+---
+# Default file for Confluence
+confluence_group: "confluence"
+confluence_user: "confluence"
+confluence_home_path: "/opt/atlassian/confluence"
+confluence_data_path: "/var/atlassian/confluence/data"
+confluence_logs_path: "/var/log/confluence"
+confluence_pkg_version: "6.15.1"
+confluence_download_path: "/opt"
+confluence_server_port: "8090"
+confluence_connector_port: "8081"
+confluence_context: ''
+confluence_db_name: "d_confluence_db" 
+confluence_db_user: "confluence"
+confluence_db_password: !vault |
+          $ANSIBLE_VAULT;1.2;AES256;api_default
+          63363565386330653262336331393637613037313931373533366363373839376437323966623232
+          3266366461383134633039616239323636356237613466650a623736653334663034376166316562
+          36643164313865303239623636633063336362336530366566643434363433393832643165343930
+          6162653039366239330a383132643639333235373934333064643835356363613831356261323733
+          3162
+confluence_java_mysql_connector_version: 8.0.19
+
+confluence_proxy_enabled: yes
+confluence_proxy:
+  public_port: ''
+  public_domain: ''
+
+confluence_catalina_opts:
+  - "-Xloggc:$LOGBASEABS/logs/gc-`date +%F_%H-%M-%S`.log"
+  - "-XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=2M"
+  - "-XX:-PrintGCDetails -XX:+PrintGCDateStamps -XX:-PrintTenuringDistribution"
+  - "-XX:G1ReservePercent=20"
+  - "-Djava.awt.headless=true"
+  - "-Datlassian.plugins.enable.wait=300"
+  - "-Xms{{ confluence_java_opts.xms }}"
+  - "-Xmx{{ confluence_java_opts.xmx }} -XX:+UseG1GC"
+  - "-Dsynchrony.enable.xhr.fallback=true"
+  - "-Dorg.apache.tomcat.websocket.DEFAULT_BUFFER_SIZE=32768"
+  - "${START_CONFLUENCE_JAVA_OPTS}"
+  - "-Dconfluence.context.path=${CONFLUENCE_CONTEXT_PATH}"
+  - "-XX:ReservedCodeCacheSize=256m -XX:+UseCodeCacheFlushing"
+
+confluence_java_opts:
+  xms: 1024m
+  xmx: 1024m  

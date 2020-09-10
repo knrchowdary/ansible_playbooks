@@ -1,0 +1,9 @@
+--- 
+- name: Weblogic Infrastructure build
+  hosts: app
+  roles:
+    - base
+    - java
+    - weblogic
+  become: yes
+  become_user: root

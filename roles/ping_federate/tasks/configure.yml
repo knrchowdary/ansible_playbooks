@@ -1,0 +1,42 @@
+---
+
+- name: ensure file permission to pingfederate user and group
+  file:
+    dest: "{{ ping_federate_dir }}"
+    owner: "{{ ping_federate_user }}"
+    group: "{{ ping_federate_group }}"
+    recurse: yes
+
+# [Unit]
+# Description=PingFederate ${PF_VERSION}
+# Documentation=https://docs.pingidentity.com
+
+# [Install]
+# WantedBy=multi-user.target
+
+# [Service]
+# Type=simple
+# User=${PF_USER}
+# WorkingDirectory=${PF_HOME}
+# Environment='JAVA_HOME=${PF_JAVA_HOME}'
+# ExecStart=${PF_HOME}/bin/run.sh
+# ExecStop=${PF_HOME}/sbin/pingfederate-shutdown.sh
+
+- name: create systemd service for pingfederate
+  import_tasks: roles/common_tasks/systemd.yml
+  vars:
+    name: pingfederate
+    description: PingFederate {{ping_federate_version}}
+    wanted_by: multi-user.target
+    type: simple
+    user: "{{ ping_federate_user }}"
+    working_directory: "{{ ping_federate_dir }}"
+    environment_vars: 
+      - "'JAVA_HOME={{ ping_federate_java_home }}'"
+    exec_start: "{{ ping_federate_dir }}/bin/run.sh"
+    exec_stop: "{{ ping_federate_dir }}/sbin/pingfederate-shutdown.sh"
+
+- name: make sure pingfederate service is up and running
+  service: 
+    name: pingfederate
+    state: started

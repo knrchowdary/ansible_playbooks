@@ -1,0 +1,78 @@
+- name: Jasper | Ensure jasper group
+  group:
+    name: "{{ jasper_group }}"
+    state: present
+    system: yes
+
+- name: Jasper | Ensure Jasper user
+  user:
+    name: "{{ jasper_user }}"
+    group: "{{ jasper_group }}"
+    system: yes
+    state: present
+
+- name: Jasper | Create install path
+  file:
+    dest: "{{ jasper_installation_path }}"
+    owner: "{{ jasper_user }}"
+    group: "{{ jasper_group }}"
+    state: directory
+
+- name: get if jasperserver js-install-ce.sh file found
+  stat:
+    path: "{{ jasper_home_dir }}/buildomatic/js-install-ce.sh"
+  register: stat_result
+
+- name: if js-install-ce.sh file found == installed
+  set_fact: 
+    jasper_is_installed: true
+  when: stat_result.stat.exists
+
+- name: Jasper | Download jasper_package
+  get_url:
+    url: "{{ jasper_sources_url }}"
+    dest: "{{ jasper_download_dir }}/{{ jasper_package }}"
+    force: no
+  when: jasper_is_installed is not defined
+
+- name: Jasper | Untar jasper
+  unarchive:
+    src: "{{ jasper_download_dir }}/{{ jasper_package }}"
+    dest: "{{ jasper_installation_path }}"
+    owner: "{{ jasper_user }}"
+    group: "{{ jasper_group }}"
+    remote_src: yes
+  when: jasper_is_installed is not defined
+
+- name: Jasper | Fix permissions
+  file:
+    dest: "{{ jasper_installation_path }}"
+    owner: "{{ jasper_user }}"
+    group: "{{ jasper_group }}"
+    recurse: yes
+
+- name: Jasper | Installation of glibc.i686
+  yum:
+    name: glibc.i686
+    state: present
+
+- name: Jasper | installing and checking firewalld
+  yum:
+    name: firewalld
+    state: present
+
+- name: Enable firewalld
+  service: 
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Jasper | Adding ports for jasperserver port
+  command: firewall-cmd --zone=public --permanent --add-port=3005/tcp
+
+
+- name: Jasper | Adding ports for jasperserver port
+  command: firewall-cmd --zone=public --permanent --add-port=8888-8889/tcp
+
+- name: Bounce firewalld
+  service: name=firewalld state=restarted

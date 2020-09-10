@@ -1,0 +1,32 @@
+samba_create_domain_controller: true
+samba_server_role: 'active directory domain controller'
+pri_domain_name: "{{ server_domain_name }}"
+samba_domain_controllers_group: controller
+samba_create_domain_users: true
+samba_create_domain_groups: true
+samba_ad_info:
+  ad_dc_hostname: "{{ ansible_hostname }}"
+  ad_dns_domain_name: "{{ pri_domain_name }}"
+  adminpass: "{{ linux_active_directory_bind_pw }}"
+  allow_dns_updates: disabled
+  backend_dns: internal
+  dns_forwarder: 8.8.8.8
+  kerberos_realm: '{{ pri_domain_name }}'
+  netbios_domain_name: "{{ samba_netbios_domain_name[0]|upper }}"
+
+samba_ous:
+  - name: "ou={{ env }},dc=vagrant,dc=com" 
+    desc: "{{ env }} env"
+samba_domain_users:
+  - name: "{{ env }}-limit"
+    password: Welcome@dev
+  - name: "{{ env }}-full"
+    password: Welcome@sudo
+samba_domain_groups:
+  - name: "{{ env }}"
+    members:
+      - "{{ env }}-limit"
+      - "{{ env }}-full"
+  - name: "sudo-{{ env }}"
+    members: 
+      - "{{ env }}-full"
