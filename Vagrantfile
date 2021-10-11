@@ -1,5 +1,5 @@
-$playbook = "weblogic.yml"
-$other_args ="--extra-vars 'server_groups=app'"
+$playbook = "test.yml"
+$other_args ="--extra-vars 'server_groups=test1'"
 servers=[
   {
     :hostname => "vagrant-test1",
